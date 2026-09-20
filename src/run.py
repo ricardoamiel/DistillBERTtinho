@@ -74,11 +74,11 @@ def main() -> None:
 
     elif args.mode == "main":
         # Headline comparison: both backbones, every dataset, identical head.
-        # The AG News encoders are kept on disk to feed the interactive demo.
+        # Every encoder is kept on disk so the interactive demo can show the
+        # latent space of each dataset, not just one.
         for dataset in MAIN_DATASETS:
             for model in ["distilbert", "bert"]:
-                run_one(model, dataset, baseline,
-                        save_encoder=(dataset == "ag_news"), **common)
+                run_one(model, dataset, baseline, save_encoder=True, **common)
 
     elif args.mode == "ablation":
         # Classifier ablation on DistilBERT only.

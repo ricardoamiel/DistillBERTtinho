@@ -25,7 +25,7 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from transformers import AutoModel, AutoTokenizer
 
-from config import MODELS, RESULTS_DIR, WEB_DATA_DIR
+from config import DATASETS, MAIN_DATASETS, MODELS, RESULTS_DIR, WEB_DATA_DIR
 from wordlist import flat_words
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -251,49 +251,66 @@ def export_words(out_dir: str) -> dict:
     return payload["meta"]
 
 
-def export_sentences(out_dir: str, n: int = 1200, max_chars: int = 220) -> dict:
+def export_sentences(out_dir: str, n: int = 1000, max_chars: int = 190) -> dict:
+    """Latent space of the test sentences of every dataset, from the fine tuned encoders.
+
+    One dataset at a time, using the pair of encoders that were fine tuned on that
+    dataset, so each panel shows how the two models organised that task.
+    """
     from datasets import load_dataset
 
-    dirs = {key: os.path.join("artifacts", "encoders", f"{key}__ag_news__A_baseline")
-            for key in MODELS}
-    missing = [k for k, d in dirs.items() if not os.path.isdir(d)]
-    if missing:
-        print(f"  skipping sentences, missing encoders for {missing}", flush=True)
+    out, meta_all = {}, {}
+    for key in MAIN_DATASETS:
+        spec = DATASETS[key]
+        dirs = {m: os.path.join("artifacts", "encoders", f"{m}__{key}__A_baseline")
+                for m in MODELS}
+        missing = [m for m, d in dirs.items() if not os.path.isdir(d)]
+        if missing:
+            print(f"  {key}: skipped, no fine tuned encoder for {missing}", flush=True)
+            continue
+
+        ds = load_dataset(spec.path, spec.name, split=spec.test_split)
+        ds = ds.shuffle(seed=SEED).select(range(min(n, len(ds))))
+        texts = list(ds[spec.text_field])
+        labels = list(ds["label"])
+
+        print(f"  embedding {len(texts)} {key} sentences with both fine tuned encoders", flush=True)
+        emb = {m: embed_sentences(dirs[m], texts, max_length=spec.max_length) for m in MODELS}
+
+        xy_bert = normalise(project_2d(emb["bert"]))
+        xy_distil = normalise(align(project_2d(emb["distilbert"]), xy_bert))
+        overlap = knn_agreement(emb["bert"], emb["distilbert"], TOP_K)
+
+        items = []
+        for i, text in enumerate(texts):
+            clean = " ".join(text.split())
+            items.append({
+                "i": i,
+                "text": clean[:max_chars] + ("..." if len(clean) > max_chars else ""),
+                "label": int(labels[i]),
+                "bert": [round(float(xy_bert[i, 0]), 4), round(float(xy_bert[i, 1]), 4)],
+                "distilbert": [round(float(xy_distil[i, 0]), 4), round(float(xy_distil[i, 1]), 4)],
+            })
+
+        meta = {
+            "n": len(items),
+            "mean_overlap": round(float(overlap.mean()), 3),
+            "overlap_pct": round(float(overlap.mean()) / TOP_K * 100, 1),
+            "cka": round(cka(emb["bert"], emb["distilbert"]), 4),
+            "ordinal": key == "yelp_full",     # star ratings are ordered, not nominal
+        }
+        out[key] = {"sentences": items, "labels": list(spec.label_names), "meta": meta}
+        meta_all[key] = meta
+        print(f"    CKA {meta['cka']}  neighbour overlap {meta['mean_overlap']}/{TOP_K}", flush=True)
+
+    if not out:
         return {}
-
-    labels_names = ["World", "Sports", "Business", "Sci/Tech"]
-    ds = load_dataset("fancyzhx/ag_news", split="test").shuffle(seed=SEED).select(range(n))
-    texts = [t for t in ds["text"]]
-    labels = list(ds["label"])
-
-    print("embedding AG News sentences with both fine tuned encoders", flush=True)
-    emb = {key: embed_sentences(dirs[key], texts) for key in MODELS}
-
-    xy_bert = normalise(project_2d(emb["bert"]))
-    xy_distil = normalise(align(project_2d(emb["distilbert"]), xy_bert))
-    overlap = knn_agreement(emb["bert"], emb["distilbert"], TOP_K)
-
-    items = []
-    for i, text in enumerate(texts):
-        clean = " ".join(text.split())
-        items.append({
-            "i": i,
-            "text": clean[:max_chars] + ("..." if len(clean) > max_chars else ""),
-            "label": int(labels[i]),
-            "bert": [round(float(xy_bert[i, 0]), 4), round(float(xy_bert[i, 1]), 4)],
-            "distilbert": [round(float(xy_distil[i, 0]), 4), round(float(xy_distil[i, 1]), 4)],
-        })
-
-    meta = {
-        "n": len(items),
-        "mean_overlap": round(float(overlap.mean()), 3),
-        "overlap_pct": round(float(overlap.mean()) / TOP_K * 100, 1),
-        "cka": round(cka(emb["bert"], emb["distilbert"]), 4),
-    }
+    payload = {"order": [k for k in MAIN_DATASETS if k in out],
+               "names": {k: k.replace("_", " ").title() for k in out},
+               "datasets": out}
     with open(os.path.join(out_dir, "sentences.json"), "w") as fh:
-        json.dump({"sentences": items, "labels": labels_names, "meta": meta}, fh)
-    print(f"  sentence CKA {meta['cka']}", flush=True)
-    return meta
+        json.dump(payload, fh)
+    return meta_all
 
 
 def export_summary(out_dir: str, results_dir: str = RESULTS_DIR) -> None:

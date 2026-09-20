@@ -379,7 +379,7 @@ Run it with a static server, because the page loads its data with fetch:
 cd web && python -m http.server 8000
 ```
 
-Then open http://localhost:8000.
+Then open http://localhost:8000. A view is shareable as a link: ?word=guitar opens that word, and ?view=ag_news opens a dataset panel.
 
 ## The report
 

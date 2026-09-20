@@ -1,7 +1,4 @@
 <title>Distilled Geometry</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 
 <style>
@@ -23,6 +20,11 @@
   --cls-2: #eb6834;
   --cls-3: #1baf7a;
   --cls-4: #4a3aa7;
+  --ord-1: #86b6ef;
+  --ord-2: #5598e7;
+  --ord-3: #2a78d6;
+  --ord-4: #1c5cab;
+  --ord-5: #104281;
   --shadow: 0 1px 2px rgba(16, 21, 29, .06), 0 8px 24px rgba(16, 21, 29, .05);
 }
 * { box-sizing: border-box; }
@@ -32,7 +34,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-family: Arial, Helvetica, "Liberation Sans", sans-serif;
   font-size: 14px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
@@ -46,12 +48,12 @@ body {
   flex-direction: column;
   gap: 22px;
 }
-.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.mono { font-variant-numeric: tabular-nums; }
 
 /* header */
 header { display: flex; flex-direction: column; gap: 8px; }
 .eyebrow {
-  font-family: "IBM Plex Mono", monospace;
+  font-variant-numeric: tabular-nums;
   font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--ink-3);
 }
@@ -59,13 +61,13 @@ h1 {
   margin: 0; font-size: clamp(26px, 4.4vw, 38px); font-weight: 600;
   letter-spacing: -.022em; text-wrap: balance; line-height: 1.12;
 }
-.lede { margin: 0; max-width: 66ch; color: var(--ink-2); font-size: 15px; }
+.lede { margin: 0; color: var(--ink-2); font-size: 15px; }
 
 /* stat strip */
 .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
 .stat { background: var(--surface); padding: 14px 16px; display: flex; flex-direction: column; gap: 3px; }
-.stat .k { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); font-family: "IBM Plex Mono", monospace; }
-.stat .v { font-size: 22px; font-weight: 600; letter-spacing: -.02em; font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+.stat .k { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.stat .v { font-size: 22px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; font-variant-numeric: tabular-nums; }
 .stat .s { font-size: 12px; color: var(--ink-2); }
 @media (max-width: 1000px) { .stats { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 680px) { .stats { grid-template-columns: repeat(2, 1fr); } }
@@ -82,7 +84,7 @@ h1 {
 
 .search { position: relative; flex: 1 1 260px; min-width: 200px; max-width: 380px; }
 .search input {
-  width: 100%; font: inherit; font-family: "IBM Plex Mono", monospace; font-size: 13px;
+  width: 100%; font: inherit; font-variant-numeric: tabular-nums; font-size: 13px;
   padding: 9px 12px; border-radius: 8px; border: 1px solid var(--line);
   background: var(--surface); color: var(--ink);
 }
@@ -95,7 +97,7 @@ h1 {
 .suggest button {
   display: flex; justify-content: space-between; gap: 10px; width: 100%; text-align: left;
   font: inherit; font-size: 13px; border: 0; background: transparent; color: var(--ink);
-  padding: 6px 9px; border-radius: 6px; cursor: pointer; font-family: "IBM Plex Mono", monospace;
+  padding: 6px 9px; border-radius: 6px; cursor: pointer; font-variant-numeric: tabular-nums;
 }
 .suggest button:hover, .suggest button[data-active="true"] { background: var(--surface-2); }
 .suggest .g { color: var(--ink-3); font-size: 11px; }
@@ -106,7 +108,7 @@ h1 {
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; }
 .panel h2 { margin: 0; padding: 12px 16px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid var(--line-soft); }
 .chipdot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
-.panel h2 .tag { margin-left: auto; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--ink-3); font-weight: 400; }
+.panel h2 .tag { margin-left: auto; font-variant-numeric: tabular-nums; font-size: 11px; color: var(--ink-3); font-weight: 400; }
 .plot { display: block; width: 100%; height: auto; }
 
 /* neighbours */
@@ -114,38 +116,38 @@ h1 {
 @media (max-width: 860px) { .nbwrap { grid-template-columns: 1fr; } }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
 th, td { text-align: left; padding: 6px 16px; border-bottom: 1px solid var(--line-soft); }
-th { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; font-family: "IBM Plex Mono", monospace; }
-td.rank, td.score { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+th { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; font-variant-numeric: tabular-nums; }
+td.rank, td.score { font-variant-numeric: tabular-nums; font-variant-numeric: tabular-nums; color: var(--ink-2); }
 td.rank { width: 30px; }
 td.score { text-align: right; width: 64px; }
-td.w { font-family: "IBM Plex Mono", monospace; }
+td.w { font-variant-numeric: tabular-nums; }
 tr[data-shared="true"] td.w { font-weight: 600; }
 tr[data-shared="true"] td.w::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--shared); margin-right: 8px; vertical-align: middle; }
 tr[data-shared="false"] td.w::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: transparent; border: 1px solid var(--line); margin-right: 8px; vertical-align: middle; }
 tbody tr:last-child td { border-bottom: 0; }
 
 .verdict { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-wrap: wrap; gap: 10px 26px; align-items: baseline; box-shadow: var(--shadow); }
-.verdict .big { font-family: "IBM Plex Mono", monospace; font-size: 20px; font-weight: 600; }
-.verdict .t { color: var(--ink-2); font-size: 13px; max-width: 62ch; }
+.verdict .big { font-variant-numeric: tabular-nums; font-size: 20px; font-weight: 600; }
+.verdict .t { color: var(--ink-2); font-size: 13.5px; flex: 1 1 320px; }
 
 /* chips */
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font: inherit; font-size: 12px; font-family: "IBM Plex Mono", monospace; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); padding: 4px 10px; border-radius: 999px; cursor: pointer; }
+.chip { font: inherit; font-size: 12px; font-variant-numeric: tabular-nums; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); padding: 4px 10px; border-radius: 999px; cursor: pointer; }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 
 /* table of runs */
 .runs { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); overflow-x: auto; }
 .runs table { min-width: 620px; }
-.runs td.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; text-align: right; }
+.runs td.num { font-variant-numeric: tabular-nums; font-variant-numeric: tabular-nums; text-align: right; }
 .runs caption { text-align: left; padding: 12px 16px 6px; font-size: 14px; font-weight: 600; }
 
-.note { color: var(--ink-2); font-size: 13px; max-width: 78ch; }
+.note { color: var(--ink-2); font-size: 13px; }
 .note b { color: var(--ink); font-weight: 600; }
 footer { color: var(--ink-3); font-size: 12px; border-top: 1px solid var(--line); padding-top: 14px; }
 
 #tip {
   position: fixed; z-index: 60; pointer-events: none; background: var(--ink); color: var(--bg);
-  padding: 5px 9px; border-radius: 6px; font-size: 12px; font-family: "IBM Plex Mono", monospace;
+  padding: 5px 9px; border-radius: 6px; font-size: 12px; font-variant-numeric: tabular-nums;
   max-width: 280px; opacity: 0; transition: opacity .1s;
 }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--ink-2); align-items: center; }
@@ -157,9 +159,9 @@ footer { color: var(--ink-3); font-size: 12px; border-top: 1px solid var(--line)
   <header>
     <div class="eyebrow">Project 1 &middot; BERT against DistilBERT</div>
     <h1>Distilled Geometry</h1>
-    <p class="lede">DistilBERT keeps six of BERT's twelve transformer blocks and drops about 40 percent of the
-      weights. The question this page answers by hand: does the smaller model still arrange language
-      the same way? Search a word, and compare what each model considers its closest relatives.</p>
+    <p class="lede">DistilBERT keeps six of BERT's twelve blocks and drops 40 percent of the weights.
+      Does it still arrange language the same way? Search a word and compare each model's closest
+      relatives, or switch to a dataset to see how each one sorts its classes.</p>
   </header>
 
   <section class="stats" id="stats" aria-label="Headline numbers"></section>
@@ -167,10 +169,7 @@ footer { color: var(--ink-3); font-size: 12px; border-top: 1px solid var(--line)
   <section class="verdict" id="verdict"></section>
 
   <div class="controls">
-    <div class="seg" role="group" aria-label="What to plot">
-      <button id="mode-words" aria-pressed="true">Words</button>
-      <button id="mode-sent" aria-pressed="false">AG News sentences</button>
-    </div>
+    <div class="seg" id="modes" role="group" aria-label="What to plot"></div>
     <div class="search" id="searchwrap">
       <input id="q" type="search" placeholder="Search a word, for example guitar" autocomplete="off"
              aria-label="Search a word" spellcheck="false">
@@ -238,20 +237,35 @@ async function boot() {
     d3.json("data/sentences.json").catch(() => null),
     d3.json("data/summary.json").catch(() => null),
   ]);
-  state.words = words; state.sents = sents; state.summary = summary;
+  state.words = words; state.summary = summary;
+  // Accept both shapes: the current file holds one entry per dataset, the earlier
+  // one held AG News on its own. Normalising here keeps the page working either way.
+  if (sents && sents.datasets) {
+    state.sents = sents;
+  } else if (sents && sents.sentences) {
+    state.sents = {
+      order: ["ag_news"],
+      names: { ag_news: "AG News" },
+      datasets: { ag_news: { sentences: sents.sentences, labels: sents.labels, meta: sents.meta } },
+    };
+  } else {
+    state.sents = null;
+  }
   if (!words) {
     document.getElementById("verdict").innerHTML =
       '<span class="t">Run <span class="mono">python src/export_embeddings.py</span> first, then serve this folder with <span class="mono">python -m http.server</span>.</span>';
     return;
   }
   renderStats(); renderVerdict(); renderGroupChips(); renderRuns(); renderDepth(); renderMethod();
+  renderModes();
   wireControls();
 
-  // Deep links: ?word=guitar and ?view=sentences, so a finding can be shared as a URL.
+  // Deep links: ?word=guitar and ?view=ag_news (any dataset key), so a finding is shareable.
   const params = new URLSearchParams(location.search);
   const wanted = (params.get("word") || "guitar").toLowerCase();
   select(words.words.find(w => w.word === wanted) || words.words[0]);
-  if (params.get("view") === "sentences" && state.sents) setMode("sentences");
+  const view = params.get("view");
+  if (view && state.sents && state.sents.datasets && state.sents.datasets[view]) setMode(view);
 }
 
 /* ---------- headline numbers ---------- */
@@ -303,16 +317,18 @@ function renderStats() {
 
 function renderVerdict() {
   const el = document.getElementById("verdict");
-  if (state.mode === "sentences" && state.sents) {
-    const sm = state.sents.meta;
+  const set = currentSet();
+  if (!isWords() && set) {
+    const sm = set.meta;
+    const name = (state.sents.names && state.sents.names[state.mode]) || state.mode;
     const prof = state.words.meta.layer_profile;
     const top = prof && prof.length ? prof[prof.length - 1].cka : null;
     el.innerHTML =
       `<span class="big" style="color: var(--shared)">${sm.cka.toFixed(3)}</span>
-       <span class="t">linear CKA between the two encoders after fine tuning, over ${sm.n} AG News test
-       sentences. Before fine tuning the same top layer comparison sits at
-       ${top !== null ? top.toFixed(3) : "a much lower value"}, so training on a shared task pulls the two
-       representations back together. Both models sort the four topics into the same four regions.</span>`;
+       <span class="t">linear CKA between the two encoders after fine tuning on ${name}, over ${sm.n} test
+       sentences. Untrained, their top layers sit at ${top !== null ? top.toFixed(3) : "far less"}. Training
+       on a shared task pulls them back together, and both models sort the ${set.labels.length} classes into
+       the same regions.</span>`;
     return;
   }
   const m = state.words.meta;
@@ -324,11 +340,26 @@ function renderVerdict() {
 }
 
 /* ---------- plots ---------- */
-function points() {
-  if (state.mode === "words") return state.words.words;
-  return state.sents ? state.sents.sentences : [];
+const isWords = () => state.mode === "words";
+function currentSet() {
+  return state.sents && state.sents.datasets ? state.sents.datasets[state.mode] : null;
 }
-function clsColor(i) { return css(["--cls-1", "--cls-2", "--cls-3", "--cls-4"][i % 4]); }
+function points() {
+  if (isWords()) return state.words.words;
+  const set = currentSet();
+  return set ? set.sentences : [];
+}
+// Nominal labels get the categorical slots; star ratings are ordered, so they get
+// a single hue ramp instead, which is what an ordinal scale calls for.
+function clsColor(i) {
+  const set = currentSet();
+  if (!set) return css("--cls-1");
+  const n = set.labels.length;
+  if (set.meta && set.meta.ordinal) {
+    return css(["--ord-1", "--ord-2", "--ord-3", "--ord-4", "--ord-5"][Math.min(i, 4)]);
+  }
+  return css(["--cls-1", "--cls-2", "--cls-3", "--cls-4"][i % Math.max(n, 1) % 4]);
+}
 
 function scales() {
   const p = PLOT.pad;
@@ -348,7 +379,7 @@ function draw() {
     const links = svg.append("g"), dots = svg.append("g"), labels = svg.append("g");
 
     const nbSet = new Set(), sharedSet = new Set();
-    if (state.mode === "words" && sel) {
+    if (isWords() && sel) {
       const a = new Set(sel.nn.bert.map(n => n.i)), b = new Set(sel.nn.distilbert.map(n => n.i));
       sel.nn[model].forEach(n => { nbSet.add(n.i); if (a.has(n.i) && b.has(n.i)) sharedSet.add(n.i); });
       sel.nn[model].forEach(n => {
@@ -370,38 +401,39 @@ function draw() {
         return 2.4;
       })
       .attr("fill", d => {
-        if (state.mode === "sentences") return clsColor(d.label);
+        if (!isWords()) return clsColor(d.label);
         if (sel && d.i === sel.i) return color;
         if (sharedSet.has(d.i)) return css("--shared");
         if (nbSet.has(d.i)) return color;
         if (state.group && d.group === state.group) return css("--ink");
         return css("--dot");
       })
-      .attr("fill-opacity", d => (state.mode === "sentences" ? .72 : 1))
+      .attr("fill-opacity", () => (isWords() ? 1 : .72))
       .attr("stroke", d => (sel && d.i === sel.i ? css("--surface") : "none"))
       .attr("stroke-width", 2)
-      .style("cursor", state.mode === "words" ? "pointer" : "default")
-      .on("mousemove", (e, d) => showTip(e, state.mode === "words" ? `${d.word}  (${d.group})` : d.text))
+      .style("cursor", isWords() ? "pointer" : "default")
+      .on("mousemove", (e, d) => showTip(e, isWords() ? `${d.word}  (${d.group})` : d.text))
       .on("mouseleave", hideTip)
-      .on("click", (e, d) => { if (state.mode === "words") select(d); });
+      .on("click", (e, d) => { if (isWords()) select(d); });
 
-    if (state.mode === "sentences" && state.sents) {
+    const set = currentSet();
+    if (!isWords() && set) {
       // Direct class labels at the centroid, so identity never rests on colour alone.
-      state.sents.labels.forEach((name, li) => {
+      set.labels.forEach((name, li) => {
         const sub = data.filter(d => d.label === li);
         if (!sub.length) return;
         const cx = d3.mean(sub, d => x(d[model][0])), cy = d3.mean(sub, d => y(d[model][1]));
         labels.append("text").attr("x", cx).attr("y", cy)
           .attr("text-anchor", "middle").attr("font-size", 12).attr("font-weight", 600)
-          .attr("font-family", "IBM Plex Mono, monospace")
+          .attr("font-family", "Arial, Helvetica, sans-serif")
           .attr("paint-order", "stroke").attr("stroke", css("--surface")).attr("stroke-width", 4)
           .attr("fill", clsColor(li)).text(name);
       });
     }
-    if (state.mode === "words" && sel) {
+    if (isWords() && sel) {
       labels.append("text").attr("x", x(sel[model][0])).attr("y", y(sel[model][1]) - 11)
         .attr("text-anchor", "middle").attr("font-size", 12).attr("font-weight", 600)
-        .attr("font-family", "IBM Plex Mono, monospace")
+        .attr("font-family", "Arial, Helvetica, sans-serif")
         .attr("paint-order", "stroke").attr("stroke", css("--surface")).attr("stroke-width", 4)
         .attr("fill", css("--ink")).text(sel.word);
     }
@@ -420,8 +452,9 @@ function hideTip() { tip.style.opacity = 0; }
 
 function renderLegend() {
   const el = document.getElementById("legend");
-  if (state.mode === "sentences" && state.sents) {
-    el.innerHTML = state.sents.labels.map((n, i) =>
+  const set = currentSet();
+  if (!isWords() && set) {
+    el.innerHTML = set.labels.map((n, i) =>
       `<span class="key"><span class="chipdot" style="background:${clsColor(i)}"></span>${n}</span>`).join("");
   } else {
     el.innerHTML =
@@ -487,21 +520,32 @@ function wireControls() {
   });
   q.addEventListener("blur", () => setTimeout(closeSuggest, 120));
 
-  const mw = document.getElementById("mode-words"), ms = document.getElementById("mode-sent");
-  mw.addEventListener("click", () => setMode("words"));
-  ms.addEventListener("click", () => { if (state.sents) setMode("sentences"); });
-  if (!state.sents) ms.disabled = true;
 }
 
 function setMode(mode) {
   state.mode = mode;
-  document.getElementById("mode-words").setAttribute("aria-pressed", mode === "words");
-  document.getElementById("mode-sent").setAttribute("aria-pressed", mode === "sentences");
-  document.getElementById("searchwrap").hidden = mode !== "words";
-  document.getElementById("nbwrap").hidden = mode !== "words";
-  document.getElementById("groupchips").hidden = mode !== "words";
+  document.querySelectorAll("#modes button").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
+  const words = mode === "words";
+  document.getElementById("searchwrap").hidden = !words;
+  document.getElementById("nbwrap").hidden = !words;
+  document.getElementById("groupchips").hidden = !words;
   renderVerdict();
   draw();
+}
+
+function renderModes() {
+  const el = document.getElementById("modes");
+  const buttons = [["words", "Words"]];
+  if (state.sents && state.sents.order) {
+    for (const key of state.sents.order) {
+      buttons.push([key, (state.sents.names && state.sents.names[key]) || key]);
+    }
+  }
+  el.innerHTML = buttons.map(([k, label]) =>
+    `<button data-mode="${k}" aria-pressed="${k === state.mode}">${label}</button>`).join("");
+  el.querySelectorAll("button").forEach(b =>
+    b.addEventListener("click", () => setMode(b.dataset.mode)));
 }
 
 function renderGroupChips() {
@@ -552,7 +596,7 @@ function renderDepth() {
       .attr("stroke", css("--line-soft")).attr("stroke-width", 1);
     grid.append("text").attr("x", m.l - 9).attr("y", y(v) + 4).attr("text-anchor", "end")
       .attr("font-size", 11).attr("fill", css("--ink-3"))
-      .attr("font-family", "IBM Plex Mono, monospace").text(v.toFixed(2));
+      .attr("font-family", "Arial, Helvetica, sans-serif").text(v.toFixed(2));
   });
 
   const line = d3.line().x(d => x(d.distil_layer)).y(d => y(d.cka));
@@ -570,12 +614,12 @@ function renderDepth() {
   svg.selectAll("text.val").data(prof).join("text").attr("class", "val")
     .attr("x", d => x(d.distil_layer)).attr("y", d => y(d.cka) - 12)
     .attr("text-anchor", "middle").attr("font-size", 11).attr("font-weight", 600)
-    .attr("font-family", "IBM Plex Mono, monospace").attr("fill", css("--ink"))
+    .attr("font-family", "Arial, Helvetica, sans-serif").attr("fill", css("--ink"))
     .text(d => d.cka.toFixed(3));
 
   svg.selectAll("text.xl").data(prof).join("text").attr("class", "xl")
     .attr("x", d => x(d.distil_layer)).attr("y", H - m.b + 18).attr("text-anchor", "middle")
-    .attr("font-size", 11).attr("font-family", "IBM Plex Mono, monospace")
+    .attr("font-size", 11).attr("font-family", "Arial, Helvetica, sans-serif")
     .attr("fill", css("--ink-2"))
     .text(d => (d.distil_layer === 0 ? "embeddings" : "D" + d.distil_layer + " / B" + d.bert_layer));
 
@@ -588,25 +632,20 @@ function renderDepth() {
   const first = prof[0], last = prof[prof.length - 1];
   const mid = prof[Math.floor(prof.length / 2)];
   document.getElementById("depthnote").innerHTML =
-    `<b>Read this as the shape of the concession.</b> At the embeddings the two models are almost the same
-     space (CKA ${first.cka.toFixed(3)}). Through the middle they stay close (${mid.cka.toFixed(3)} at
-     DistilBERT block ${mid.distil_layer} against BERT block ${mid.bert_layer}). Only at the top do they
-     part (${last.cka.toFixed(3)}), which is exactly where a transformer stores what is specific to its
-     pretraining objective. Distillation kept the shared foundation and let the specialised top drift.`;
+    `<b>The shape of the concession.</b> At the embeddings the two models are almost the same space
+     (CKA ${first.cka.toFixed(3)}), and through the middle they stay close (${mid.cka.toFixed(3)}).
+     They part only at the top (${last.cka.toFixed(3)}), which is where a transformer holds what is
+     specific to its pretraining objective.`;
 }
 
 function renderMethod() {
   document.getElementById("method").innerHTML =
-    `<b>How to read this.</b> Each word is passed on its own through the pretrained encoder. Its sub token
-     vectors are averaged at every layer, those layers are averaged together, and the mean over all words is
-     subtracted, which removes the narrow cone that last layer BERT vectors are known to sit in. That gives
-     one 768 dimensional vector per word per model.
-     Neighbours, the agreement percentage and CKA are all computed on those full vectors. The scatter plots
-     are a 2D view of the same vectors, PCA down to 50 dimensions then t-SNE down to 2, with the DistilBERT
-     layout rotated onto the BERT layout so the two panels can be compared by eye. The sentence view uses
-     the encoders after fine tuning on AG News and shows the CLS vector of each test sentence.
-     Topic purity counts how many of a word's ten neighbours carry the same topic label as the word itself,
-     where the labels are used only to score the result and are never given to either model.`;
+    `<b>How to read this.</b> Each word is embedded on its own, averaged over every layer and mean
+     centred, giving one 768 dimensional vector per model. Neighbours, the agreement percentage and CKA
+     are computed on those full vectors; the scatter plots are a PCA then t-SNE view of the same vectors,
+     with the DistilBERT layout rotated onto the BERT one so the panels line up. The dataset views use the
+     encoders fine tuned on that dataset. Topic purity counts how many of a word's ten neighbours carry
+     its own topic label, which is used only to score the result and is never shown to either model.`;
 }
 
 boot();

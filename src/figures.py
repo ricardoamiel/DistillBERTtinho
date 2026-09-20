@@ -87,6 +87,23 @@ def setup_style() -> None:
     })
 
 
+def bar_values(ax, bars, values, fmt="{:.1f}", size=5.8):
+    """Write each bar's value above it, turned upright so neighbours cannot collide."""
+    for b, v in zip(bars, values):
+        ax.annotate(fmt.format(v), (b.get_x() + b.get_width() / 2, b.get_height()),
+                    xytext=(0, 2), textcoords="offset points", rotation=90,
+                    ha="center", va="bottom", fontsize=size, color=INK_SOFT)
+
+
+def legend_below(fig, labels_colors, ncols=None, y=-0.04, marker="s", size=7):
+    """One legend under the whole figure, never inside an axes where it can cover data."""
+    handles = [plt.Line2D([], [], marker=marker, ls="", color=c, label=n)
+               for n, c in labels_colors]
+    fig.legend(handles=handles, ncols=ncols or len(handles), loc="lower center",
+               bbox_to_anchor=(0.5, y), fontsize=size, handletextpad=0.4,
+               columnspacing=1.4)
+
+
 def tidy(ax) -> None:
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
@@ -234,29 +251,27 @@ def fig_performance(results: dict) -> None:
     names = ["Accuracy", "Precision", "Recall", "F1"]
     ncol = 2
     nrow = int(np.ceil(len(datasets) / ncol))
-    fig, axes = plt.subplots(nrow, ncol, figsize=(5.4, 1.9 * nrow), squeeze=False)
+    fig, axes = plt.subplots(nrow, ncol, figsize=(5.4, 2.0 * nrow), squeeze=False,
+                             layout="constrained")
 
     for ax, d in zip(axes.flat, datasets):
         x = np.arange(len(keys))
-        for i, m in enumerate(("distilbert", "bert")):
-            r = get(results, m, d)
-            vals = [r["metrics"][k] * 100 for k in keys]
-            bars = ax.bar(x + (i - 0.5) * 0.38, vals, width=0.36,
-                          color=MODEL_COLOR[m], label=MODEL_LABEL[m])
-            for b, v in zip(bars, vals):
-                ax.text(b.get_x() + b.get_width() / 2, v + 0.6, f"{v:.1f}",
-                        ha="center", fontsize=6, color=INK_SOFT)
         lo = min(get(results, m, d)["metrics"][k] * 100
                  for m in ("distilbert", "bert") for k in keys)
-        ax.set_ylim(max(0, lo - 8), 103)
-        ax.set_xticks(x, names)
-        ax.set_title(DATASET_LABEL[d])
-        ax.set_ylabel("%")
+        for i, m in enumerate(("distilbert", "bert")):
+            vals = [get(results, m, d)["metrics"][k] * 100 for k in keys]
+            bars = ax.bar(x + (i - 0.5) * 0.38, vals, width=0.36, color=MODEL_COLOR[m])
+            bar_values(ax, bars, vals, "{:.1f}")
+        # headroom for the upright labels
+        ax.set_ylim(max(0, lo - 6), 100 + (100 - max(0, lo - 6)) * 0.16)
+        ax.set_xticks(x, names, fontsize=7)
+        ax.set_title(DATASET_LABEL[d], fontsize=8.5)
+        ax.set_ylabel("%", fontsize=7.5)
+        ax.tick_params(labelsize=7)
         tidy(ax)
     for ax in axes.flat[len(datasets):]:
         ax.set_visible(False)
-    axes.flat[0].legend(loc="lower right", ncols=2)
-    fig.tight_layout()
+    legend_below(fig, [(MODEL_LABEL[m], MODEL_COLOR[m]) for m in ("distilbert", "bert")])
     save(fig, "fig2_performance_metrics")
 
 
@@ -265,7 +280,8 @@ def fig_loss_curves(results: dict) -> None:
     datasets = available_main(results)
     if not datasets:
         return
-    fig, axes = plt.subplots(1, len(datasets), figsize=(5.4, 1.55), squeeze=False)
+    fig, axes = plt.subplots(1, len(datasets), figsize=(5.4, 1.65), squeeze=False,
+                             layout="constrained")
     for i, (ax, d) in enumerate(zip(axes.flat, datasets)):
         for m in ("distilbert", "bert"):
             h = get(results, m, d)["training"]["history"]
@@ -281,8 +297,8 @@ def fig_loss_curves(results: dict) -> None:
                for m in ("distilbert", "bert")]
     handles += [plt.Line2D([], [], color=INK_SOFT, ls="-", label="training"),
                 plt.Line2D([], [], color=INK_SOFT, ls="--", label="validation")]
-    fig.legend(handles=handles, ncols=4, loc="lower center", bbox_to_anchor=(0.5, -0.13), fontsize=7)
-    fig.tight_layout()
+    fig.legend(handles=handles, ncols=4, loc="lower center",
+               bbox_to_anchor=(0.5, -0.17), fontsize=7)
     save(fig, "fig3_loss_curves")
 
 
@@ -292,30 +308,27 @@ def fig_efficiency(results: dict) -> None:
     if not datasets:
         return
     panels = [
-        ("GPU latency\nbatch 1 (ms)", lambda r: r["latency"]["latency_ms_p50"]),
-        ("Throughput\nbatch 32 (samples/s)", lambda r: r["latency"]["throughput_samples_per_s"]),
-        ("Peak GPU memory\ntraining (MiB)", lambda r: r["training"]["train_peak_gpu_mb"]),
-        ("Wall clock\ntraining (min)", lambda r: r["training"]["train_seconds"] / 60),
+        ("GPU latency\nbatch 1 (ms)", lambda r: r["latency"]["latency_ms_p50"], "{:.1f}"),
+        ("Throughput\nbatch 32 (samples/s)", lambda r: r["latency"]["throughput_samples_per_s"], "{:.0f}"),
+        ("Peak GPU memory\ntraining (MiB)", lambda r: r["training"]["train_peak_gpu_mb"], "{:.0f}"),
+        ("Wall clock\ntraining (min)", lambda r: r["training"]["train_seconds"] / 60, "{:.1f}"),
     ]
-    fig, axes = plt.subplots(1, 4, figsize=(5.4, 1.85))
+    fig, axes = plt.subplots(1, 4, figsize=(5.4, 2.1), layout="constrained")
     x = np.arange(len(datasets))
-    for ax, (title, fn) in zip(axes.flat, panels):
+    for ax, (title, fn, fmt) in zip(axes.flat, panels):
+        top = 0
         for i, m in enumerate(("distilbert", "bert")):
             vals = [fn(get(results, m, d)) for d in datasets]
-            bars = ax.bar(x + (i - 0.5) * 0.38, vals, width=0.36,
-                          color=MODEL_COLOR[m], label=MODEL_LABEL[m])
-            for b, v in zip(bars, vals):
-                ax.text(b.get_x() + b.get_width() / 2, v, f"{v:.0f}" if v >= 10 else f"{v:.1f}",
-                        ha="center", va="bottom", fontsize=6, color=INK_SOFT)
-        ax.set_xticks(x, [DATASET_LABEL[d] for d in datasets], rotation=38, ha="right", fontsize=6)
+            top = max(top, max(vals))
+            bars = ax.bar(x + (i - 0.5) * 0.38, vals, width=0.36, color=MODEL_COLOR[m])
+            bar_values(ax, bars, vals, fmt)
+        ax.set_ylim(0, top * 1.38)          # room for the upright labels
+        ax.set_xticks(x, [DATASET_LABEL[d] for d in datasets], rotation=40,
+                      ha="right", fontsize=6)
         ax.set_title(title, fontsize=7.5)
         ax.tick_params(axis="y", labelsize=6.5)
-        ax.margins(y=0.2)
         tidy(ax)
-    handles = [plt.Line2D([], [], marker="s", ls="", color=MODEL_COLOR[m], label=MODEL_LABEL[m])
-               for m in ("distilbert", "bert")]
-    fig.legend(handles=handles, ncols=2, loc="lower center", bbox_to_anchor=(0.5, -0.16), fontsize=7)
-    fig.tight_layout()
+    legend_below(fig, [(MODEL_LABEL[m], MODEL_COLOR[m]) for m in ("distilbert", "bert")], y=-0.09)
     save(fig, "fig4_efficiency")
 
 
@@ -325,9 +338,9 @@ def fig_ablation(results: dict) -> None:
                 if all(get(results, "distilbert", d, c.key) for c in ABLATIONS)]
     if not datasets:
         return
-    fig, axes = plt.subplots(1, len(datasets) + 1,
-                             figsize=(5.4, 1.95),
-                             gridspec_kw={"width_ratios": [1.15] * len(datasets) + [1.0]})
+    fig, axes = plt.subplots(1, len(datasets) + 1, figsize=(5.4, 2.15),
+                             gridspec_kw={"width_ratios": [1.15] * len(datasets) + [1.0]},
+                             layout="constrained")
     axes = np.atleast_1d(axes)
     order = [c.key for c in ABLATIONS]
 
@@ -336,38 +349,59 @@ def fig_ablation(results: dict) -> None:
         colors = [C_AXIS[ABLATION_AXIS[k]] for k in order]
         y = np.arange(len(order))
         ax.barh(y, vals, color=colors, height=0.68)
+        span = max(vals) - min(vals)
         for yi, v in zip(y, vals):
-            ax.text(v + 0.4, yi, f"{v:.1f}", va="center", fontsize=6.5, color=INK_SOFT)
-        ax.set_yticks(y, [ABLATION_SHORT[k] for k in order])
+            ax.text(v + span * 0.03, yi, f"{v:.1f}", va="center", fontsize=6.2, color=INK_SOFT)
+        ax.set_yticks(y, [ABLATION_SHORT[k] for k in order], fontsize=6.2)
         ax.invert_yaxis()
-        ax.set_xlim(min(vals) - 6, 100)
-        ax.set_xlabel("F1 macro (%)")
-        ax.set_title(DATASET_LABEL[d])
+        ax.set_xlim(min(vals) - span * 0.12, max(vals) + span * 0.26)
+        ax.set_xlabel("F1 macro (%)", fontsize=7)
+        ax.set_title(DATASET_LABEL[d], fontsize=8.5)
+        ax.tick_params(axis="x", labelsize=6.5)
         ax.grid(axis="y", visible=False)
         ax.grid(axis="x", visible=True)
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
 
+    # cost against quality, with the point labels pushed apart so none is hidden
     ax = axes[-1]
+    pts = []
     for k in order:
         r = get(results, "distilbert", datasets[0], k)
-        ax.scatter(r["params"]["trainable_params"] / 1e6,
-                   np.mean([get(results, "distilbert", d, k)["metrics"]["f1_macro"] * 100
-                            for d in datasets]),
-                   s=60, color=C_AXIS[ABLATION_AXIS[k]], edgecolor="white", linewidth=1.0)
-        ax.annotate(k.split("_")[0], (r["params"]["trainable_params"] / 1e6,
-                    np.mean([get(results, "distilbert", d, k)["metrics"]["f1_macro"] * 100
-                             for d in datasets])),
-                    xytext=(5, -2), textcoords="offset points", fontsize=6.5, color=INK_SOFT)
-    ax.set_xlabel("Trainable parameters (millions)")
-    ax.set_ylabel("Mean F1 macro (%)")
-    ax.set_title("Cost against quality")
+        mean_f1 = float(np.mean([get(results, "distilbert", d, k)["metrics"]["f1_macro"] * 100
+                                 for d in datasets]))
+        pts.append([r["params"]["trainable_params"] / 1e6, mean_f1, k.split("_")[0], k])
+    for x, y, _, k in pts:
+        ax.scatter(x, y, s=50, color=C_AXIS[ABLATION_AXIS[k]], edgecolor="white", linewidth=1.0)
+    # Labels get their own y positions, pushed apart from the bottom up, and a thin
+    # leader line back to the point they belong to.
+    xs = [p[0] for p in pts]
+    ys = [p[1] for p in pts]
+    span = max(ys) - min(ys)
+    gap = 0.085 * max(span, 1e-6)
+    x_off = 0.12 * max(max(xs) - min(xs), 1.0)
+
+    placed, prev = [], None
+    for x, y, label, _ in sorted(pts, key=lambda p: p[1]):
+        ly = y if prev is None else max(y, prev + gap)
+        placed.append((x, y, ly, label))
+        prev = ly
+
+    for x, y, ly, label in placed:
+        ax.annotate(label, xy=(x, y), xytext=(x + x_off, ly), textcoords="data",
+                    fontsize=6.2, color=INK_SOFT, va="center", annotation_clip=False,
+                    arrowprops=dict(arrowstyle="-", color=GRID, lw=0.6,
+                                    shrinkA=0, shrinkB=3))
+    top = max(max(ys), max(p[2] for p in placed))
+    ax.set_ylim(min(ys) - span * 0.12, top + span * 0.12)
+    ax.set_xlim(-8, max(xs) * 1.55)
+    ax.set_xlabel("Trainable parameters (M)", fontsize=7)
+    ax.set_ylabel("Mean F1 macro (%)", fontsize=7)
+    ax.set_title("Cost against quality", fontsize=8.5)
+    ax.tick_params(labelsize=6.5)
     tidy(ax)
 
-    handles = [plt.Line2D([], [], marker="s", ls="", color=c, label=n.capitalize())
-               for n, c in C_AXIS.items()]
-    fig.legend(handles=handles, loc="lower center", ncols=4, bbox_to_anchor=(0.5, -0.06))
-    fig.tight_layout()
+    legend_below(fig, [(n.capitalize(), c) for n, c in C_AXIS.items()], y=-0.11)
     save(fig, "fig5_ablation")
 
 
@@ -382,24 +416,22 @@ def fig_best_on_bert(results: dict) -> None:
         return
     metrics = [("accuracy", "Accuracy"), ("precision_macro", "Precision"),
                ("recall_macro", "Recall"), ("f1_macro", "F1")]
-    fig, axes = plt.subplots(1, len(datasets) + 1, figsize=(5.4, 2.05))
+    fig, axes = plt.subplots(1, len(datasets) + 1, figsize=(5.4, 2.3), layout="constrained")
     axes = np.atleast_1d(axes)
 
     for ax, d in zip(axes, datasets):
         x = np.arange(len(metrics))
-        for i, m in enumerate(("distilbert", "bert")):
-            r = get(results, m, d, key)
-            vals = [r["metrics"][k] * 100 for k, _ in metrics]
-            bars = ax.bar(x + (i - 0.5) * 0.38, vals, width=0.36,
-                          color=MODEL_COLOR[m], label=MODEL_LABEL[m])
-            for b, v in zip(bars, vals):
-                ax.text(b.get_x() + b.get_width() / 2, v + 0.4, f"{v:.1f}",
-                        ha="center", fontsize=6, color=INK_SOFT)
         lo = min(get(results, m, d, key)["metrics"][k] * 100
                  for m in ("distilbert", "bert") for k, _ in metrics)
-        ax.set_ylim(max(0, lo - 6), 103)
-        ax.set_xticks(x, [n for _, n in metrics], rotation=20, ha="right")
-        ax.set_title(DATASET_LABEL[d])
+        for i, m in enumerate(("distilbert", "bert")):
+            vals = [get(results, m, d, key)["metrics"][k] * 100 for k, _ in metrics]
+            bars = ax.bar(x + (i - 0.5) * 0.38, vals, width=0.36, color=MODEL_COLOR[m])
+            bar_values(ax, bars, vals, "{:.1f}")
+        base = max(0, lo - 4)
+        ax.set_ylim(base, base + (100 - base) * 1.2)
+        ax.set_xticks(x, [n for _, n in metrics], rotation=35, ha="right", fontsize=6.5)
+        ax.set_title(DATASET_LABEL[d], fontsize=8.5)
+        ax.tick_params(axis="y", labelsize=6.5)
         tidy(ax)
 
     ax = axes[-1]
@@ -410,42 +442,51 @@ def fig_best_on_bert(results: dict) -> None:
         ("Train (min)", lambda r: r["training"]["train_seconds"] / 60),
     ]
     x = np.arange(len(bars_data))
+    top = 0
     for i, m in enumerate(("distilbert", "bert")):
         r = get(results, m, d, key)
         vals = [fn(r) for _, fn in bars_data]
+        top = max(top, max(vals))
         bars = ax.bar(x + (i - 0.5) * 0.38, vals, width=0.36, color=MODEL_COLOR[m])
-        for b, v in zip(bars, vals):
-            ax.text(b.get_x() + b.get_width() / 2, v, f"{v:.1f}",
-                    ha="center", va="bottom", fontsize=6, color=INK_SOFT)
-    ax.set_xticks(x, [n for n, _ in bars_data], rotation=20, ha="right")
-    ax.set_title("Cost on " + DATASET_LABEL[d])
-    ax.margins(y=0.2)
+        bar_values(ax, bars, vals, "{:.1f}")
+    ax.set_ylim(0, top * 1.4)
+    ax.set_xticks(x, [n for n, _ in bars_data], rotation=35, ha="right", fontsize=6.5)
+    ax.set_title("Cost on " + DATASET_LABEL[d], fontsize=8.5)
+    ax.tick_params(axis="y", labelsize=6.5)
     tidy(ax)
-    axes.flat[0].legend(loc="lower left", ncols=2)
-    fig.suptitle(f"Best classifier variant: {ABLATION_SHORT.get(key, key)}", fontsize=9)
-    fig.tight_layout()
+
+    fig.suptitle(f"Best classifier variant: {ABLATION_SHORT.get(key, key)}", fontsize=8.5)
+    legend_below(fig, [(MODEL_LABEL[m], MODEL_COLOR[m]) for m in ("distilbert", "bert")], y=-0.07)
     save(fig, "fig6_best_variant_on_bert")
 
 
 def fig_confusion(results: dict) -> None:
-    """Confusion matrices on AG News."""
+    """Confusion matrices on AG News, one panel per backbone."""
     if not get(results, "distilbert", "ag_news"):
         return
-    fig, axes = plt.subplots(1, 2, figsize=(5.4, 2.5))
     names = DATASETS["ag_news"].label_names
+    fig, axes = plt.subplots(1, 2, figsize=(5.4, 2.6), layout="constrained")
     for ax, m in zip(axes, ("distilbert", "bert")):
         cm = np.array(get(results, m, "ag_news")["metrics"]["confusion_matrix"], dtype=float)
         cm = cm / cm.sum(axis=1, keepdims=True) * 100
         im = ax.imshow(cm, cmap="Blues", vmin=0, vmax=100)
         for i in range(cm.shape[0]):
             for j in range(cm.shape[1]):
-                ax.text(j, i, f"{cm[i, j]:.0f}", ha="center", va="center", fontsize=6.5,
+                ax.text(j, i, f"{cm[i, j]:.0f}", ha="center", va="center", fontsize=9.5,
                         color="white" if cm[i, j] > 55 else INK)
-        ax.set_xticks(range(len(names)), names, rotation=30, ha="right")
-        ax.set_yticks(range(len(names)), names)
-        ax.set_title(MODEL_LABEL[m])
+        ax.set_xticks(range(len(names)), names, rotation=35, ha="right", fontsize=9)
+        # only the left panel carries the class names, so nothing collides in the middle
+        if m == "distilbert":
+            ax.set_yticks(range(len(names)), names, fontsize=9)
+            ax.set_ylabel("True class", fontsize=9.5)
+        else:
+            ax.set_yticks(range(len(names)), [""] * len(names))
+        ax.set_xlabel("Predicted class", fontsize=9.5)
+        ax.set_title(MODEL_LABEL[m], fontsize=11.5)
         ax.grid(False)
-    fig.colorbar(im, ax=axes, shrink=0.8, label="Row percentage")
+    cb = fig.colorbar(im, ax=axes, shrink=0.82, pad=0.02)
+    cb.set_label("Row percentage", fontsize=9.5)
+    cb.ax.tick_params(labelsize=9)
     save(fig, "fig7_confusion_ag_news")
 
 
@@ -455,7 +496,8 @@ def fig_epochs(results: dict) -> None:
                 if all(get(results, m, d, "A_baseline__ep4") for m in ("distilbert", "bert"))]
     if not datasets:
         return
-    fig, axes = plt.subplots(1, len(datasets), figsize=(5.4, 1.9), squeeze=False)
+    fig, axes = plt.subplots(1, len(datasets), figsize=(5.4, 2.0), squeeze=False,
+                             layout="constrained")
     for ax, d in zip(axes.flat, datasets):
         for m in ("distilbert", "bert"):
             rows = get(results, m, d, "A_baseline__ep4")["training"]["per_epoch"]
@@ -479,8 +521,8 @@ def fig_epochs(results: dict) -> None:
                           label=MODEL_LABEL[m]) for m in ("distilbert", "bert")]
     handles += [plt.Line2D([], [], color=INK_SOFT, ls="-", label="validation"),
                 plt.Line2D([], [], color=INK_SOFT, ls="--", label="test")]
-    fig.legend(handles=handles, ncols=4, loc="lower center", bbox_to_anchor=(0.5, -0.16), fontsize=7)
-    fig.tight_layout()
+    fig.legend(handles=handles, ncols=4, loc="lower center",
+               bbox_to_anchor=(0.5, -0.14), fontsize=7)
     save(fig, "fig9_epoch_study")
 
 
@@ -524,7 +566,7 @@ def fig_representation(web_dir: str | None = None) -> None:
     overlap = np.array([w["overlap"] for w in data["words"]])
     k = meta["top_k"]
 
-    fig, axes = plt.subplots(1, 2, figsize=(5.4, 1.75))
+    fig, axes = plt.subplots(1, 2, figsize=(5.4, 1.85), layout="constrained")
 
     ax = axes[0]
     counts = np.bincount(overlap, minlength=k + 1)
@@ -553,7 +595,6 @@ def fig_representation(web_dir: str | None = None) -> None:
         ax.set_ylabel("Linear CKA")
         ax.set_title("Alignment falls with depth", fontsize=8)
     tidy(ax)
-    fig.tight_layout()
     save(fig, "fig8_representation_similarity")
 
 
@@ -923,7 +964,15 @@ def write_numbers(results: dict) -> None:
     if os.path.exists(sen):
         with open(sen) as fh:
             s_ = json.load(fh)
-        m("sentCka", s_["meta"]["cka"], "{:.3f}")
+        # one entry per dataset now; the report quotes the AG News number
+        per_ds = s_.get("datasets", {})
+        if "ag_news" in per_ds:
+            m("sentCka", per_ds["ag_news"]["meta"]["cka"], "{:.3f}")
+            best_ds = max(per_ds, key=lambda k: per_ds[k]["meta"]["cka"])
+            m("sentCkaMax", per_ds[best_ds]["meta"]["cka"], "{:.3f}")
+            m("sentCkaMin", min(v["meta"]["cka"] for v in per_ds.values()), "{:.3f}")
+        elif "meta" in s_:
+            m("sentCka", s_["meta"]["cka"], "{:.3f}")
 
     # providecommand plus renewcommand so this file can be read after the report
     # has already declared fallbacks for the same names.

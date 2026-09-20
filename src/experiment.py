@@ -46,7 +46,10 @@ def run_one(model_key: str, dataset_key: str, head: HeadConfig,
     rid = run_id(model_key, dataset_key, head.key, tag)
     os.makedirs(results_dir, exist_ok=True)
     path = os.path.join(results_dir, f"{rid}.json")
-    if os.path.exists(path) and not overwrite:
+    encoder_dir = os.path.join("artifacts", "encoders", rid)
+    # A finished run is only complete if the encoder it was asked to keep is there too.
+    done = os.path.exists(path) and (not save_encoder or os.path.isdir(encoder_dir))
+    if done and not overwrite:
         print(f"[skip] {rid} already done", flush=True)
         with open(path) as fh:
             return json.load(fh)
@@ -98,7 +101,7 @@ def run_one(model_key: str, dataset_key: str, head: HeadConfig,
     }
 
     if save_encoder:
-        out_dir = os.path.join("artifacts", "encoders", rid)
+        out_dir = encoder_dir
         os.makedirs(out_dir, exist_ok=True)
         model.backbone.save_pretrained(out_dir)
         tokenizer.save_pretrained(out_dir)
