@@ -40,25 +40,14 @@
 \maketitle
 
 \begin{abstract}
-We present an evaluation of using knowledge distillation to train a smaller encoder DistilBERT from a base BERT as the teacher. We fine tune DistilBERT and BERT base under an identical classifier, optimiser and data budget on \nDatasets{} text classification datasets: AG News, SST 2, Yelp Polarity and Yelp Review Full. DistilBERT holds \paramReduction{} percent fewer parameters and reaches \accRetention{} percent of the accuracy of BERT, a mean gap of \meanAccGap{} points ranging from \minAccGap{} to \maxAccGap{} across datasets, in exchange for \throughputSpeedup{} times the inference throughput and \memReduction{} percent less peak GPU memory in training. A seven way ablation over the classifier shows its shape is almost irrelevant: width and depth move F1 macro by at most \headSpread{} points, while freezing the transformer costs \frozenGap{}. Over \nWords{} words, \wordOverlapPct{} percent of nearest neighbours are shared between the two pretrained encoders, at a linear CKA of \wordCka{}. What distillation gave up is capacity, not the organisation of the space.
+We present an evaluation of using knowledge distillation to train a smaller encoder DistilBERT from a base BERT as the teacher. We fine tune DistilBERT and BERT base under an identical classifier, optimiser and data budget on \nDatasets{} text classification datasets: AG News, SST 2, Yelp Polarity and Yelp Review Full. DistilBERT holds \paramReduction{} percent fewer parameters and reaches \accRetention{} percent of the accuracy of BERT, a mean gap of \meanAccGap{} points ranging from \minAccGap{} to \maxAccGap{} across datasets, in exchange for \throughputSpeedup{} times the inference throughput and \memReduction{} percent less peak GPU memory in training. We perform a seven ablations over the classifier which results are: width and depth move F1 macro by at most \headSpread{} points, while freezing the transformer costs \frozenGap{}. Over \nWords{} words, \wordOverlapPct{} percent of nearest neighbours are shared between the two pretrained encoders, at a linear CKA of \wordCka{}. 
 \end{abstract}
 
 \section{Introduction}
 
-BERT \citep{devlin2019bert} made pretrained bidirectional transformers \citep{vaswani2017attention} the
-default starting point for text classification, at a cost that is awkward in deployment: 110 million
-parameters and a twelve block forward pass per input. DistilBERT \citep{sanh2019distilbert} answers with
-knowledge distillation \citep{hinton2015distilling}, training a six block student against the teacher
-output distribution, its hidden states and the masked language modelling objective, and reports roughly
-97 percent of the GLUE score \citep{wang2018glue} of BERT with 40 percent fewer parameters.
+This report is a controlled comparison of two models on text classification, a BERT \citep{devlin2019bert} model with 110 million parameters and a twelve block forward pass per input, and DistilBERT \citep{sanh2019distilbert} following the teacher student design of knowledge distillation \citep{hinton2015distilling}, using six blocks in the student and the masked language modelling objective. Initially we expected to achieve 97 percent of the GLUE score in BERT with 40 percent fewer parameters as reported in \citep{wang2018glue}.
 
-This report is a controlled comparison of those two models on text classification. It proposes no method.
-It replaces that aggregate headline with the three measurements needed before choosing a backbone for one
-task: how large the accuracy gap is on that dataset, what the smaller model buys in latency and memory, and
-whether any of the gap can be recovered by spending capacity on the classifier instead of the encoder. Both
-backbones get the same classifier, optimiser and data budget, on four datasets, plus an ablation over the
-classifier along the three axes a practitioner controls, freezing, width and depth, and a representation
-level comparison of the two encoders.
+The structure is based in one section by each of the following questions: how large the accuracy gap is on that dataset, what the smaller model buys in latency and memory, and whether any of the gap can be recovered by spending capacity on the classifier instead of the encoder. Both backbones get the same classifier, optimiser and data budget, on four datasets, plus an ablation over the classifier along the three conditions, freezing, width and depth, and a representation level comparison of the two encoders.
 
 \section{Approach}
 
@@ -129,21 +118,14 @@ finer grained label set.
   \label{fig:loss}
 \end{figure}
 
-\paragraph{How many epochs are needed.}
-Two epochs is a choice, so we test it: both backbones are trained on SST 2 and AG News to four epochs, the
-top of the published range, scoring the full validation split at every boundary. The best epoch varies
-between \epochBestMin{} and \epochBestMax{} across the \epochStudyRuns{} runs with no consistent pattern,
-and training past epoch two is worth at most \epochGainOverTwo{} F1 macro points, inside the band we treat
-as noise. Two epochs is a defensible stopping point rather than a budget compromise.
+\paragraph{How many epochs are needed.} 
+Both backbones are trained on SST 2 and AG News to four epochs. The best epoch varies between \epochBestMin{} and \epochBestMax{} across the \epochStudyRuns{} runs with no consistent pattern, and training past epoch two is worth at most \epochGainOverTwo{} F1 macro points, inside the band we treat as noise. Therefore, two epochs seemed enough to set as the default training time for our evaluations avoiding expensive further training.
 
 \paragraph{Training dynamics.}
-Figure \ref{fig:loss} matters beyond bookkeeping: if DistilBERT were merely underfitting, its training loss
-would sit high and still be falling at the end. It does not, both models flatten together, so the distance
-between the validation curves is a capacity gap and not an optimisation gap.
+We expected that DistilBERT were merely underfitting by having less parameters, additionally its training loss would sit high and still be falling at the end. However Figure \ref{fig:loss} shows that both models flatten together, so the distance between the validation curves is a capacity gap and not an optimisation gap.
 
 \paragraph{Efficiency.}
-The shape of the saving is worth reading carefully. Halving
-the depth should buy a factor of two, and it does exactly that where the device is actually busy:
+Halving the depth should buy a factor of two, and it does exactly that where the device is actually busy:
 DistilBERT sustains \throughputDistil{} samples per second at batch 32 against \throughputBert{}, a factor
 of \throughputSpeedup{}, and on CPU it needs \cpuLatencyDistil{} ms per example against \cpuLatencyBert{}.
 At batch one on the GPU the same models are only \gpuSpeedup{} times apart, \gpuLatencyDistil{} ms against
@@ -165,25 +147,10 @@ has nothing left to extract.
 \input{../artifacts/tables/table_ablation.tex}
 
 \paragraph{Freezing is the axis that matters, and only in its upper half.}
-Freezing the whole transformer costs \frozenGap{} F1 macro points against the baseline, more than an order
-of magnitude beyond any head shape change. Freezing only the lower three blocks costs \halfFrozenGap{}
-points, inside the band that separates the head shapes, while cutting trainable parameters to
-\halfFrozenTrainable{}M, \halfFrozenTrainableCut{} percent fewer, and training \halfFrozenSpeedup{} times
-faster. Task adaptation therefore lives almost entirely in the upper half of the encoder. This is not a new
-result and we do not claim it as one: \citet{kovaleva2019revealing} report that the last two layers of BERT
-change most during fine tuning, \citet{merchant2020what} find that fine tuning primarily affects the top
-layers, and \citet{lee2019freezing} show that tuning only the final quarter of the layers recovers 90
-percent of the quality of tuning all of them. Our runs add that the same holds for a distilled six block
-encoder, where there are far fewer layers to give away. The selected variant is \bestVariant{} at
-\bestVariantFone{} mean F1 macro, the simplest head in the grid.
+Freezing the whole transformer costs \frozenGap{} F1 macro points against the baseline, more than an order of magnitude beyond any head shape change. Freezing only the lower three blocks costs \halfFrozenGap{} points, inside the band that separates the head shapes, while cutting trainable parameters to \halfFrozenTrainable{}M, \halfFrozenTrainableCut{} percent fewer, and training \halfFrozenSpeedup{} times faster. By discarding these effects we conclude that task adaptation relies almost entirely in the upper half of the encoder and it is according to \citet{kovaleva2019revealing} that report the last two layers of BERT change most during fine tuning, \citet{merchant2020what} find that fine tuning primarily affects the top layers, and \citet{lee2019freezing} show that tuning only the final quarter of the layers recovers 90 percent of the quality of tuning all of them. Our runs add that the same holds for a distilled six block encoder, where there are far fewer layers to give away. The selected variant is \bestVariant{} at \bestVariantFone{} mean F1 macro, the simplest head in the grid.
 
-\paragraph{The winning variant on BERT.}
-Table \ref{tab:best} rebuilds that variant on BERT base. The ordering is unchanged and the gap stays in the
-band of the main comparison, so the ablation conclusion belongs to the fine tuning setup rather than to
-DistilBERT specifically. Figure \ref{fig:confusion} shows where the remaining errors sit: both models
-concentrate them between Business and Sci/Tech, two classes that share vocabulary. The larger model
-resolves a few more of those borderline cases but does not fail in different ones, which is the conclusion
-the representation analysis below reaches by another route.
+\paragraph{Best BERT version.}
+The bests results were reported in Table \ref{tab:best} while Figure \ref{fig:confusion} shows where the remaining errors sit: both models concentrate them between Business and Sci/Tech, two classes that share vocabulary. The larger model resolves a few more of those borderline cases but does not fail in different ones.
 
 \begin{figure}[!tb]
   \centering
@@ -196,32 +163,11 @@ the representation analysis below reaches by another route.
 \input{../artifacts/tables/table_best_on_bert.tex}
 
 \paragraph{Do the two encoders see language the same way?}
-The accuracy gap says how often the models agree on a label, not whether they agree on the geometry
-underneath. We compare the geometries with linear centred kernel alignment, CKA
-\citep{kornblith2019similarity}. It is the right index here because it is invariant to orthogonal
-transformation and isotropic scaling, so a change of basis is not counted as a difference, but not to
-arbitrary invertible maps, which is what lets it compare separately trained networks where canonical
-correlation analysis cannot. We embed \nWords{} words spanning 20 topics with
-each pretrained encoder and compare the two 768 dimensional spaces, matching student block $d$ to teacher
-block $2d$, the layer it was initialised from. Alignment is near perfect at
-the embeddings (\ckaEmbeddings{}), still high at mid depth (\ckaMid{}) and falls to \ckaTop{} at the top,
-so distillation preserved the lower and middle geometry and let the specialised upper layers drift. In the
-layer averaged, mean centred space, \wordOverlap{} of the ten nearest neighbours BERT assigns to a word are
-also chosen by DistilBERT, and \purityDistil{} percent of DistilBERT neighbours share their query word
-topic against \purityBert{} percent for BERT, so the smaller model is marginally tidier here. Fine tuning
-then realigns the tops: over AG News test sentences the two fine tuned encoders reach CKA \sentCka{}. An
-interactive version ships with the code.
+The accuracy gap says how often the models agree on a label, not whether they agree on the geometry underneath. We compare the geometries with linear centred kernel alignment, CKA \citep{kornblith2019similarity}. Since it is invariant to orthogonal transformation and isotropic scaling, so a change of basis is not counted as a difference, but not to arbitrary invertible maps, this allows us to compare separately trained networks where canonical correlation analysis cannot. We embed \nWords{} words spanning 20 topics with each pretrained encoder and compare the two 768 dimensional spaces, matching student block $d$ to teacher block $2d$, the layer it was initialised from. Alignment is near perfect at the embeddings (\ckaEmbeddings{}), still high at mid depth (\ckaMid{}) and falls to \ckaTop{} at the top, so distillation preserved the lower and middle geometry and let the specialised upper layers drift. In the layer averaged, mean centred space, \wordOverlap{} of the ten nearest neighbours BERT assigns to a word are also chosen by DistilBERT, and \purityDistil{} percent of DistilBERT neighbours share their query word topic against \purityBert{} percent for BERT, so the smaller model is marginally tidier here. Fine tuning then realigns the tops: over AG News test sentences the two fine tuned encoders reach CKA \sentCka{}. An interactive version ships with the code.
 
 \section{Conclusion}
 
-DistilBERT keeps \accRetention{} percent of the accuracy of BERT base across four datasets while holding
-\paramReduction{} percent fewer parameters, reaching \throughputSpeedup{} times its throughput and training
-in \memReduction{} percent less GPU memory, so under a latency or memory budget it is the right default on
-tasks of this kind. Capacity does not belong in the classifier, where width and depth move F1 macro by at
-most \headSpread{} points, but in the upper encoder and only there: freezing all six blocks costs
-\frozenGap{} points, freezing the lower three costs \halfFrozenGap{} and trains \halfFrozenSpeedup{} times
-faster, and the layerwise alignment agrees, near perfect at the embeddings and \ckaTop{} at the top. Each
-run used a single seed, so differences under half a point are noise.
+DistilBERT keeps \accRetention{} percent of the accuracy of BERT base across four datasets while holding \paramReduction{} percent fewer parameters, reaching \throughputSpeedup{} times its throughput and training in \memReduction{} percent less GPU memory, so under a latency or memory budget both have similar performance on tasks of this kind. Additionally width and depth move F1 macro by at most \headSpread{} points, but in the upper encoder and only there: freezing all six blocks costs \frozenGap{} points, freezing the lower three costs \halfFrozenGap{} and trains \halfFrozenSpeedup{} times faster, and the layerwise alignment agrees, near perfect at the embeddings and \ckaTop{} at the top. Each run used a single seed, so differences under half a point are noise.
 
 % Tighter reference list: it is not counted in the four page body, so it should
 % not spill onto a page of its own for the sake of two entries.
