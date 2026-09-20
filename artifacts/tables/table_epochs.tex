@@ -1,5 +1,19 @@
-\begin{table}[t]\centering\footnotesize
-\caption{Pending. The runs behind this table have not finished; src/figures.py writes it as soon as they do.}
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Epoch study. Training runs to four epochs, the top of the range recommended by Devlin et al., and validation F1 macro is scored at every epoch boundary. Best is the epoch selected by validation F1.}
 \label{tab:epochs}
-\begin{tabular}{l}\toprule pending \\ \bottomrule\end{tabular}
+\begin{tabular}{llrrrrr}
+\toprule
+Dataset & Model & \multicolumn{4}{c}{Validation F1 macro after epoch} & Best \\
+\cmidrule(lr){3-6}
+ &  & 1 & 2 & 3 & 4 &  \\
+\midrule
+SST 2 & DistilBERT & 94.24 & 94.74 & \textbf{95.01} & 94.86 & 3 \\
+SST 2 & BERT & 94.62 & 95.25 & 95.31 & \textbf{95.37} & 4 \\
+\addlinespace
+AG News & DistilBERT & 93.48 & \textbf{94.37} & 93.82 & 94.06 & 2 \\
+AG News & BERT & 94.12 & 94.17 & \textbf{94.36} & 94.33 & 3 \\
+\bottomrule
+\end{tabular}
 \end{table}

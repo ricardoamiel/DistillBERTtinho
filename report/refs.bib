@@ -1,16 +1,21 @@
+% DOIs below were resolved and checked against Crossref. The remaining entries are
+% published at venues that assign no DOI (NeurIPS, ICML/PMLR, ICLR, JMLR) or exist
+% only as preprints, so none is invented for them.
+
 @inproceedings{devlin2019bert,
   title     = {{BERT}: Pre-training of Deep Bidirectional Transformers for Language Understanding},
   author    = {Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina},
   booktitle = {Proceedings of NAACL-HLT},
   pages     = {4171--4186},
-  year      = {2019}
+  year      = {2019},
+  doi       = {10.18653/v1/N19-1423}
 }
 
-@article{sanh2019distilbert,
-  title   = {{DistilBERT}, a distilled version of {BERT}: smaller, faster, cheaper and lighter},
-  author  = {Sanh, Victor and Debut, Lysandre and Chaumond, Julien and Wolf, Thomas},
-  journal = {arXiv preprint arXiv:1910.01108},
-  year    = {2019}
+@inproceedings{sanh2019distilbert,
+  title     = {{DistilBERT}, a distilled version of {BERT}: smaller, faster, cheaper and lighter},
+  author    = {Sanh, Victor and Debut, Lysandre and Chaumond, Julien and Wolf, Thomas},
+  booktitle = {5th Workshop on Energy Efficient Machine Learning and Cognitive Computing, NeurIPS},
+  year      = {2019}
 }
 
 @inproceedings{vaswani2017attention,
@@ -18,20 +23,22 @@
   author    = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and
                Jones, Llion and Gomez, Aidan N. and Kaiser, Lukasz and Polosukhin, Illia},
   booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {30},
   year      = {2017}
 }
 
-@article{hinton2015distilling,
-  title   = {Distilling the Knowledge in a Neural Network},
-  author  = {Hinton, Geoffrey and Vinyals, Oriol and Dean, Jeff},
-  journal = {arXiv preprint arXiv:1503.02531},
-  year    = {2015}
+@inproceedings{hinton2015distilling,
+  title     = {Distilling the Knowledge in a Neural Network},
+  author    = {Hinton, Geoffrey and Vinyals, Oriol and Dean, Jeff},
+  booktitle = {NeurIPS Deep Learning and Representation Learning Workshop},
+  year      = {2015}
 }
 
 @inproceedings{zhang2015character,
   title     = {Character-level Convolutional Networks for Text Classification},
   author    = {Zhang, Xiang and Zhao, Junbo and LeCun, Yann},
   booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {28},
   year      = {2015}
 }
 
@@ -41,7 +48,8 @@
                Manning, Christopher D. and Ng, Andrew and Potts, Christopher},
   booktitle = {Proceedings of EMNLP},
   pages     = {1631--1642},
-  year      = {2013}
+  year      = {2013},
+  doi       = {10.18653/v1/D13-1170}
 }
 
 @inproceedings{wang2018glue,
@@ -49,29 +57,17 @@
   author    = {Wang, Alex and Singh, Amanpreet and Michael, Julian and Hill, Felix and
                Levy, Omer and Bowman, Samuel R.},
   booktitle = {Proceedings of the EMNLP Workshop BlackboxNLP},
-  year      = {2018}
-}
-
-@inproceedings{jiao2020tinybert,
-  title     = {{TinyBERT}: Distilling {BERT} for Natural Language Understanding},
-  author    = {Jiao, Xiaoqi and Yin, Yichun and Shang, Lifeng and Jiang, Xin and Chen, Xiao and
-               Li, Linlin and Wang, Fang and Liu, Qun},
-  booktitle = {Findings of EMNLP},
-  year      = {2020}
-}
-
-@inproceedings{sun2020mobilebert,
-  title     = {{MobileBERT}: a Compact Task-Agnostic {BERT} for Resource-Limited Devices},
-  author    = {Sun, Zhiqing and Yu, Hongkun and Song, Xiaodan and Liu, Renjie and Yang, Yiming and
-               Zhou, Denny},
-  booktitle = {Proceedings of ACL},
-  year      = {2020}
+  pages     = {353--355},
+  year      = {2018},
+  doi       = {10.18653/v1/W18-5446}
 }
 
 @inproceedings{kornblith2019similarity,
   title     = {Similarity of Neural Network Representations Revisited},
   author    = {Kornblith, Simon and Norouzi, Mohammad and Lee, Honglak and Hinton, Geoffrey},
   booktitle = {Proceedings of ICML},
+  volume    = {97},
+  pages     = {3519--3529},
   year      = {2019}
 }
 
@@ -89,4 +85,29 @@
   volume  = {9},
   pages   = {2579--2605},
   year    = {2008}
+}
+
+@inproceedings{kovaleva2019revealing,
+  title     = {Revealing the Dark Secrets of {BERT}},
+  author    = {Kovaleva, Olga and Romanov, Alexey and Rogers, Anna and Rumshisky, Anna},
+  booktitle = {Proceedings of EMNLP-IJCNLP},
+  pages     = {4365--4374},
+  year      = {2019},
+  doi       = {10.18653/v1/D19-1445}
+}
+
+@inproceedings{merchant2020what,
+  title     = {What Happens To {BERT} Embeddings During Fine-tuning?},
+  author    = {Merchant, Amil and Rahimtoroghi, Elahe and Pavlick, Ellie and Tenney, Ian},
+  booktitle = {Proceedings of the EMNLP Workshop BlackboxNLP},
+  pages     = {33--44},
+  year      = {2020},
+  doi       = {10.18653/v1/2020.blackboxnlp-1.4}
+}
+
+@article{lee2019freezing,
+  title   = {What Would Elsa Do? Freezing Layers During Transformer Fine-Tuning},
+  author  = {Lee, Jaejun and Tang, Raphael and Lin, Jimmy},
+  journal = {arXiv preprint arXiv:1911.03090},
+  year    = {2019}
 }

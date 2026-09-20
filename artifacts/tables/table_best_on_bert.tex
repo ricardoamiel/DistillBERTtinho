@@ -1,17 +1,27 @@
 \begin{table}[t]
 \centering
-\footnotesize
-\caption{The selected classifier variant with each backbone, all metrics.}
+\scriptsize
+\caption{The variant selected by the ablation (G: no hidden layer) on each backbone, with every metric this study records, measured on the same GPU. Within each dataset the better of the two values is in bold, taking lower as better for loss, size, latency, memory and time.}
 \label{tab:best}
-\begin{tabular}{llrrrrrrr}
+\begin{tabular}{lrrrr}
 \toprule
-Dataset & Model & Accuracy & Precision & Recall & F1 & Params (M) & GPU ms & Train GiB \\
+ & \multicolumn{2}{c}{SST 2} & \multicolumn{2}{c}{AG News} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+ & DistilBERT & BERT & DistilBERT & BERT \\
 \midrule
-SST 2 & DistilBERT & 91.40 & 91.42 & 91.38 & 91.39 & 66.4 & 2.23 & 1.28 \\
-SST 2 & BERT & 91.97 & 92.01 & 91.95 & 91.97 & 109.5 & 5.12 & 2.25 \\
-\addlinespace
-AG News & DistilBERT & 94.84 & 94.88 & 94.84 & 94.85 & 66.4 & 2.48 & 1.67 \\
-AG News & BERT & 94.72 & 94.77 & 94.72 & 94.73 & 109.5 & 3.23 & 3.01 \\
+Accuracy (\%) & 91.40 & \textbf{91.97} & \textbf{94.84} & 94.72 \\
+Precision, macro (\%) & 91.42 & \textbf{92.01} & \textbf{94.88} & 94.77 \\
+Recall, macro (\%) & 91.38 & \textbf{91.95} & \textbf{94.84} & 94.72 \\
+F1, macro (\%) & 91.39 & \textbf{91.97} & \textbf{94.85} & 94.73 \\
+Test cross entropy & 0.286 & \textbf{0.267} & \textbf{0.168} & \textbf{0.168} \\
+Total parameters (M) & \textbf{66.4} & 109.5 & \textbf{66.4} & 109.5 \\
+Trainable parameters (M) & \textbf{66.4} & 109.5 & \textbf{66.4} & 109.5 \\
+GPU latency, batch 1 (ms) & \textbf{2.23} & 5.12 & \textbf{2.48} & 3.23 \\
+CPU latency, batch 1 (ms) & \textbf{27.8} & 53.2 & \textbf{36.4} & 72.2 \\
+Throughput, batch 32 (samples/s) & \textbf{2452} & 1218 & \textbf{1220} & 611 \\
+Peak GPU memory, training (MiB) & \textbf{1313} & 2302 & \textbf{1706} & 3083 \\
+Peak GPU memory, inference (MiB) & \textbf{404} & 569 & \textbf{539} & 706 \\
+Training wall clock (min) & \textbf{2.6} & 3.9 & \textbf{4.3} & 7.8 \\
 \bottomrule
 \end{tabular}
 \end{table}

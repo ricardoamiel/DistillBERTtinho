@@ -13,6 +13,7 @@ import glob
 import json
 import os
 import pathlib
+import re
 
 import matplotlib
 matplotlib.use("Agg")
@@ -93,11 +94,13 @@ def tidy(ax) -> None:
 
 
 def save(fig, name: str) -> None:
+    """PDF and SVG for the report, PNG so the figures render on GitHub."""
     os.makedirs(FIGURES_DIR, exist_ok=True)
     for ext in ("pdf", "svg"):
         fig.savefig(os.path.join(FIGURES_DIR, f"{name}.{ext}"), format=ext)
+    fig.savefig(os.path.join(FIGURES_DIR, f"{name}.png"), format="png", dpi=200)
     plt.close(fig)
-    print(f"  wrote {name}.pdf and {name}.svg", flush=True)
+    print(f"  wrote {name}.pdf, {name}.svg and {name}.png", flush=True)
 
 
 # --------------------------------------------------------------------------
@@ -492,7 +495,8 @@ def table_epochs(results: dict) -> None:
             r = get(results, m, d, "A_baseline__ep4")
             per = r["training"]["per_epoch"]
             best = r["training"]["best_epoch_by_val_f1"]
-            cells = " & ".join(f"{x['val_f1_macro'] * 100:.2f}" for x in per)
+            cells = " & ".join(mark_best([x["val_f1_macro"] * 100 for x in per],
+                                         "{:.2f}", higher_is_better=True))
             rows.append(f"{DATASET_LABEL[d]} & {MODEL_LABEL[m]} & {cells} & {best} \\\\")
         rows.append("\\addlinespace")
     cols = "ll" + "r" * EPOCH_STUDY_EPOCHS + "r"
@@ -520,7 +524,7 @@ def fig_representation(web_dir: str | None = None) -> None:
     overlap = np.array([w["overlap"] for w in data["words"]])
     k = meta["top_k"]
 
-    fig, axes = plt.subplots(1, 2, figsize=(5.4, 1.95))
+    fig, axes = plt.subplots(1, 2, figsize=(5.4, 1.75))
 
     ax = axes[0]
     counts = np.bincount(overlap, minlength=k + 1)
@@ -556,6 +560,34 @@ def fig_representation(web_dir: str | None = None) -> None:
 # --------------------------------------------------------------------------
 # LaTeX tables
 # --------------------------------------------------------------------------
+
+def mark_best(values: list[float], fmt: str, higher_is_better: bool = True,
+              bold: str = "tex") -> list[str]:
+    """Format a row or column and emphasise the winning value.
+
+    Ties are all marked, since claiming a single winner on equal numbers would be
+    misleading. Returns LaTeX or Markdown depending on bold.
+    """
+    texts = [fmt.format(v) for v in values]
+    # Compare what the reader sees, so two values that print the same are both
+    # marked rather than one being crowned on invisible decimals.
+    shown = []
+    for v, t in zip(values, texts):
+        try:
+            shown.append(float(t.replace(",", "")))
+        except ValueError:
+            shown.append(float("nan"))
+    clean = [v for v in shown if v == v]
+    if not clean:
+        return texts
+    target = max(clean) if higher_is_better else min(clean)
+    out = []
+    for v, t in zip(shown, texts):
+        if v == v and v == target:
+            t = f"\\textbf{{{t}}}" if bold == "tex" else f"**{t}**"
+        out.append(t)
+    return out
+
 
 def write_table(name: str, body: str, caption: str = "", label: str = "",
                 size: str = "\\footnotesize") -> None:
@@ -596,20 +628,24 @@ def table_main(results: dict) -> None:
     datasets = available_main(results)
     if not datasets:
         return
+    keys = ["accuracy", "precision_macro", "recall_macro", "f1_macro"]
     rows = []
     for d in datasets:
-        for m in ("distilbert", "bert"):
-            r = get(results, m, d)["metrics"]
-            rows.append(f"{DATASET_LABEL[d]} & {MODEL_LABEL[m]} & "
-                        f"{r['accuracy']*100:.2f} & {r['precision_macro']*100:.2f} & "
-                        f"{r['recall_macro']*100:.2f} & {r['f1_macro']*100:.2f} \\\\")
+        cells = {}
+        for k in keys:
+            vals = [get(results, m, d)["metrics"][k] * 100 for m in ("distilbert", "bert")]
+            cells[k] = mark_best(vals, "{:.2f}", higher_is_better=True)
+        for i, m in enumerate(("distilbert", "bert")):
+            line = " & ".join(cells[k][i] for k in keys)
+            rows.append(f"{DATASET_LABEL[d]} & {MODEL_LABEL[m]} & {line} \\\\")
         rows.append("\\addlinespace")
     body = ("\\begin{tabular}{llrrrr}\n\\toprule\n"
             "Dataset & Model & Accuracy & Precision & Recall & F1 \\\\\n\\midrule\n"
             + "\n".join(rows[:-1]) + "\n\\bottomrule\n\\end{tabular}\n")
     write_table("table_main_results", body,
                 caption="Performance of both backbones with the identical baseline classifier. "
-                        "Precision, recall and F1 are macro averaged.", label="tab:main")
+                        "Precision, recall and F1 are macro averaged. The better value of each "
+                        "pair is in bold.", label="tab:main")
 
 
 def table_efficiency(results: dict) -> None:
@@ -643,13 +679,16 @@ def table_ablation(results: dict) -> None:
     if not datasets:
         return
     header = " & ".join(f"{DATASET_LABEL[d]} Acc & {DATASET_LABEL[d]} F1" for d in datasets)
+    # one column at a time, so the best variant on each dataset metric stands out
+    columns = []
+    for d in datasets:
+        for k in ("accuracy", "f1_macro"):
+            vals = [get(results, "distilbert", d, c.key)["metrics"][k] * 100 for c in ABLATIONS]
+            columns.append(mark_best(vals, "{:.2f}", higher_is_better=True))
     rows = []
-    for cfg in ABLATIONS:
+    for i, cfg in enumerate(ABLATIONS):
         r0 = get(results, "distilbert", datasets[0], cfg.key)
-        cells = []
-        for d in datasets:
-            mm = get(results, "distilbert", d, cfg.key)["metrics"]
-            cells += [f"{mm['accuracy']*100:.2f}", f"{mm['f1_macro']*100:.2f}"]
+        cells = [col[i] for col in columns]
         rows.append(f"{ABLATION_SHORT[cfg.key]} & {r0['params']['trainable_params']/1e6:.1f} & "
                     + " & ".join(cells) + " \\\\")
     cols = "lr" + "rr" * len(datasets)
@@ -658,10 +697,17 @@ def table_ablation(results: dict) -> None:
             + "\n".join(rows) + "\n\\bottomrule\n\\end{tabular}\n")
     write_table("table_ablation", body,
                 caption="Classifier ablation on DistilBERT. Train (M) is the number of trainable "
-                        "parameters in millions.", label="tab:ablation")
+                        "parameters in millions. The best variant in each column is in bold.",
+                label="tab:ablation")
 
 
 def table_best_on_bert(results: dict) -> None:
+    """The selected variant on both backbones, transposed so every metric fits.
+
+    The assignment asks for all metrics here, so this table carries the four
+    performance scores and every efficiency measurement we record, rather than a
+    selection that happens to fit across the page.
+    """
     key = best_head(results)
     if key is None:
         return
@@ -669,25 +715,60 @@ def table_best_on_bert(results: dict) -> None:
                 if get(results, "distilbert", d, key) and get(results, "bert", d, key)]
     if not datasets:
         return
-    rows = []
-    for d in datasets:
-        for m in ("distilbert", "bert"):
-            r = get(results, m, d, key)
-            mm = r["metrics"]
-            rows.append(f"{DATASET_LABEL[d]} & {MODEL_LABEL[m]} & "
-                        f"{mm['accuracy']*100:.2f} & {mm['precision_macro']*100:.2f} & "
-                        f"{mm['recall_macro']*100:.2f} & {mm['f1_macro']*100:.2f} & "
-                        f"{r['params']['total_params']/1e6:.1f} & "
-                        f"{r['latency']['latency_ms_p50']:.2f} & "
-                        f"{r['training']['train_peak_gpu_mb']/1024:.2f} \\\\")
-        rows.append("\\addlinespace")
-    body = ("\\begin{tabular}{llrrrrrrr}\n\\toprule\n"
-            "Dataset & Model & Accuracy & Precision & Recall & F1 & Params (M) & GPU ms & Train GiB \\\\\n"
-            "\\midrule\n" + "\n".join(rows[:-1]) + "\n\\bottomrule\n\\end{tabular}\n")
+
+    cols = [(d, m) for d in datasets for m in ("distilbert", "bert")]
+    # last field: is a larger number better for this metric
+    rows = [
+        ("Accuracy (\\%)", lambda r: r["metrics"]["accuracy"] * 100, "{:.2f}", True),
+        ("Precision, macro (\\%)", lambda r: r["metrics"]["precision_macro"] * 100, "{:.2f}", True),
+        ("Recall, macro (\\%)", lambda r: r["metrics"]["recall_macro"] * 100, "{:.2f}", True),
+        ("F1, macro (\\%)", lambda r: r["metrics"]["f1_macro"] * 100, "{:.2f}", True),
+        ("Test cross entropy", lambda r: r["test_loss"], "{:.3f}", False),
+        ("Total parameters (M)", lambda r: r["params"]["total_params"] / 1e6, "{:.1f}", False),
+        ("Trainable parameters (M)", lambda r: r["params"]["trainable_params"] / 1e6, "{:.1f}", False),
+        ("GPU latency, batch 1 (ms)", lambda r: r["latency"]["latency_ms_p50"], "{:.2f}", False),
+        ("CPU latency, batch 1 (ms)",
+         lambda r: r["latency"].get("cpu_latency_ms_p50", float("nan")), "{:.1f}", False),
+        ("Throughput, batch 32 (samples/s)",
+         lambda r: r["latency"]["throughput_samples_per_s"], "{:.0f}", True),
+        ("Peak GPU memory, training (MiB)",
+         lambda r: r["training"]["train_peak_gpu_mb"], "{:.0f}", False),
+        ("Peak GPU memory, inference (MiB)",
+         lambda r: r["memory"]["inference_peak_mb"], "{:.0f}", False),
+        ("Training wall clock (min)", lambda r: r["training"]["train_seconds"] / 60, "{:.1f}", False),
+    ]
+
+    header = " & ".join(MODEL_LABEL[m] for _, m in cols)
+    group = " & ".join(f"\\multicolumn{{2}}{{c}}{{{DATASET_LABEL[d]}}}" for d in datasets)
+    cmid = " ".join(f"\\cmidrule(lr){{{2 + 2 * i}-{3 + 2 * i}}}" for i in range(len(datasets)))
+    body_rows = []
+    for name, fn, fmt, higher in rows:
+        cells = []
+        # each dataset is its own contest between the two backbones
+        for i in range(0, len(cols), 2):
+            pair = [fn(get(results, m, d, key)) for d, m in cols[i:i + 2]]
+            cells += mark_best(pair, fmt, higher)
+        body_rows.append(f"{name} & {' & '.join(cells)} \\\\")
+
+    body = (f"\\begin{{tabular}}{{l{'rr' * len(datasets)}}}\n\\toprule\n"
+            f" & {group} \\\\\n{cmid}\n & {header} \\\\\n\\midrule\n"
+            + "\n".join(body_rows) + "\n\\bottomrule\n\\end{tabular}\n")
     write_table("table_best_on_bert", body,
-                caption="The selected classifier variant with each backbone, all metrics.",
-                label="tab:best")
+                caption=f"The variant selected by the ablation ({ABLATION_SHORT.get(key, key)}) on each "
+                        "backbone, with every metric this study records, measured on the same GPU. "
+                        "Within each dataset the better of the two values is in bold, taking lower "
+                        "as better for loss, size, latency, memory and time.",
+                label="tab:best", size="\\scriptsize")
     write_table("best_variant_name", ABLATION_SHORT.get(key, key))
+
+
+def macros_used_by_report(path: str = "report/main.tex") -> set[str]:
+    """Every \\name{} the report body references, so none can be left undefined."""
+    if not os.path.exists(path):
+        return set()
+    text = pathlib.Path(path).read_text()
+    body = text.split("\\begin{document}", 1)[-1]
+    return set(re.findall(r"\\([a-zA-Z]+)\{\}", body))
 
 
 def write_numbers(results: dict) -> None:
@@ -846,8 +927,13 @@ def write_numbers(results: dict) -> None:
 
     # providecommand plus renewcommand so this file can be read after the report
     # has already declared fallbacks for the same names.
+    # Any quantity the report uses that has no result file yet gets a visible
+    # placeholder, so the report still compiles and the gap is obvious in the PDF.
+    for name in macros_used_by_report():
+        macros.setdefault(name, "\\textbf{[pending]}")
+
     body = "\n".join(f"\\providecommand{{\\{k}}}{{}}\\renewcommand{{\\{k}}}{{{v}}}"
-                     for k, v in macros.items()) + "\n"
+                     for k, v in sorted(macros.items())) + "\n"
     write_table("numbers", body)
 
 
@@ -857,17 +943,23 @@ def summary_markdown(results: dict) -> str:
     if not datasets:
         return "Run the experiments first, then run src/figures.py.\n"
 
+    def fig(name, caption):
+        return ["", f"![{caption}](artifacts/figures/{name}.png)", "",
+                f"*{caption}*", ""]
+
     out = ["## Results summary", "",
            "Generated by src/figures.py from artifacts/results. Do not edit by hand.", "",
            "### Performance, identical classifier on both backbones", "",
            "| Dataset | Model | Accuracy | Precision | Recall | F1 macro |",
            "|---|---|---|---|---|---|"]
+    perf_keys = ["accuracy", "precision_macro", "recall_macro", "f1_macro"]
     for d in datasets:
-        for m_ in ("distilbert", "bert"):
-            mm = get(results, m_, d)["metrics"]
-            out.append(f"| {DATASET_LABEL[d]} | {MODEL_LABEL[m_]} | {mm['accuracy']*100:.2f} | "
-                       f"{mm['precision_macro']*100:.2f} | {mm['recall_macro']*100:.2f} | "
-                       f"{mm['f1_macro']*100:.2f} |")
+        marked = {k: mark_best([get(results, m_, d)["metrics"][k] * 100
+                                for m_ in ("distilbert", "bert")], "{:.2f}", True, bold="md")
+                  for k in perf_keys}
+        for i, m_ in enumerate(("distilbert", "bert")):
+            cells = " | ".join(marked[k][i] for k in perf_keys)
+            out.append(f"| {DATASET_LABEL[d]} | {MODEL_LABEL[m_]} | {cells} |")
 
     def avg(model, fn):
         return float(np.mean([fn(get(results, model, d)) for d in datasets]))
@@ -882,12 +974,22 @@ def summary_markdown(results: dict) -> str:
             ("Peak GPU memory, inference (MiB)", lambda r: r["memory"]["inference_peak_mb"], "{:.0f}", False),
             ("Training wall clock, all datasets (min)",
              lambda r: r["training"]["train_seconds"] / 60 * len(datasets), "{:.0f}", False)]
+    out += fig("fig2_performance_metrics",
+               "Accuracy, precision, recall and F1 for both backbones on every dataset")
+    out += fig("fig1_params_vs_accuracy_bubble",
+               "Parameters against accuracy. Bubble area is single example GPU latency")
+    out += fig("fig3_loss_curves",
+               "Iterations against training loss (solid) and validation loss (dashed)")
     out += ["", "### Efficiency, averaged over the datasets", "",
             "| Measurement | BERT | DistilBERT | DistilBERT advantage |", "|---|---|---|---|"]
     for name, fn, fmt, higher_better in rows:
         b, dd = avg("bert", fn), avg("distilbert", fn)
         ratio = (dd / b) if higher_better else (b / dd if dd else float("nan"))
-        out.append(f"| {name} | {fmt.format(b)} | {fmt.format(dd)} | {ratio:.2f}x |")
+        cb, cd = mark_best([b, dd], fmt, higher_better, bold="md")
+        out.append(f"| {name} | {cb} | {cd} | {ratio:.2f}x |")
+
+    out += fig("fig4_efficiency",
+               "Latency, throughput, peak training memory and wall clock time")
 
     key = best_head(results)
     if key:
@@ -895,28 +997,53 @@ def summary_markdown(results: dict) -> str:
                 "| Variant | Trainable (M) | " +
                 " | ".join(f"{DATASET_LABEL[d]} F1" for d in ABLATION_DATASETS) + " |",
                 "|---" * (2 + len(ABLATION_DATASETS)) + "|"]
-        for cfg in ABLATIONS:
-            vals = [get(results, "distilbert", d, cfg.key) for d in ABLATION_DATASETS]
-            if not all(vals):
-                continue
-            tp = vals[0]["params"]["trainable_params"] / 1e6
-            cells = " | ".join(f"{v['metrics']['f1_macro']*100:.2f}" for v in vals)
+        abl_cols = [mark_best([get(results, "distilbert", d, c.key)["metrics"]["f1_macro"] * 100
+                               for c in ABLATIONS], "{:.2f}", True, bold="md")
+                    for d in ABLATION_DATASETS]
+        for i, cfg in enumerate(ABLATIONS):
+            base = get(results, "distilbert", ABLATION_DATASETS[0], cfg.key)
+            tp = base["params"]["trainable_params"] / 1e6
+            cells = " | ".join(col[i] for col in abl_cols)
             out.append(f"| {ABLATION_SHORT[cfg.key]} | {tp:.1f} | {cells} |")
 
-        out += ["", "### The best variant with each backbone", "",
-                "| Dataset | Model | Accuracy | Precision | Recall | F1 macro | Params (M) | GPU ms | Train GiB |",
-                "|---|---|---|---|---|---|---|---|---|"]
-        for d in ABLATION_DATASETS:
-            for m_ in ("distilbert", "bert"):
-                r = get(results, m_, d, key)
-                if not r:
-                    continue
-                mm = r["metrics"]
-                out.append(f"| {DATASET_LABEL[d]} | {MODEL_LABEL[m_]} | {mm['accuracy']*100:.2f} | "
-                           f"{mm['precision_macro']*100:.2f} | {mm['recall_macro']*100:.2f} | "
-                           f"{mm['f1_macro']*100:.2f} | {r['params']['total_params']/1e6:.1f} | "
-                           f"{r['latency']['latency_ms_p50']:.2f} | "
-                           f"{r['training']['train_peak_gpu_mb']/1024:.2f} |")
+        out += fig("fig5_ablation",
+                   "Classifier ablation on DistilBERT. Only the freezing axis separates the variants")
+        # Transposed so every metric fits, matching the table in the report.
+        cols = [(d, m_) for d in ABLATION_DATASETS for m_ in ("distilbert", "bert")
+                if get(results, m_, d, key)]
+        metric_rows = [
+            ("Accuracy (%)", lambda r: r["metrics"]["accuracy"] * 100, "{:.2f}", True),
+            ("Precision, macro (%)", lambda r: r["metrics"]["precision_macro"] * 100, "{:.2f}", True),
+            ("Recall, macro (%)", lambda r: r["metrics"]["recall_macro"] * 100, "{:.2f}", True),
+            ("F1, macro (%)", lambda r: r["metrics"]["f1_macro"] * 100, "{:.2f}", True),
+            ("Test cross entropy", lambda r: r["test_loss"], "{:.3f}", False),
+            ("Total parameters (M)", lambda r: r["params"]["total_params"] / 1e6, "{:.1f}", False),
+            ("Trainable parameters (M)", lambda r: r["params"]["trainable_params"] / 1e6, "{:.1f}", False),
+            ("GPU latency, batch 1 (ms)", lambda r: r["latency"]["latency_ms_p50"], "{:.2f}", False),
+            ("CPU latency, batch 1 (ms)",
+             lambda r: r["latency"].get("cpu_latency_ms_p50", float("nan")), "{:.1f}", False),
+            ("Throughput, batch 32 (samples/s)",
+             lambda r: r["latency"]["throughput_samples_per_s"], "{:.0f}", True),
+            ("Peak GPU memory, training (MiB)",
+             lambda r: r["training"]["train_peak_gpu_mb"], "{:.0f}", False),
+            ("Peak GPU memory, inference (MiB)",
+             lambda r: r["memory"]["inference_peak_mb"], "{:.0f}", False),
+            ("Training wall clock (min)", lambda r: r["training"]["train_seconds"] / 60, "{:.1f}", False),
+        ]
+        head = " | ".join(f"{DATASET_LABEL[d]} {MODEL_LABEL[m_]}" for d, m_ in cols)
+        out += ["", "### The best variant with each backbone, every metric", "",
+                f"| Metric | {head} |", "|---" * (1 + len(cols)) + "|"]
+        for name, fn, fmt, higher in metric_rows:
+            cells = []
+            for i in range(0, len(cols), 2):
+                pair = [fn(get(results, m_, d, key)) for d, m_ in cols[i:i + 2]]
+                cells += mark_best(pair, fmt, higher, bold="md")
+            out.append(f"| {name} | {' | '.join(cells)} |")
+
+        out += fig("fig6_best_variant_on_bert",
+                   "The selected classifier variant with each backbone")
+        out += fig("fig7_confusion_ag_news",
+                   "Row normalised confusion matrices on AG News. Both models fail in the same place")
 
     ep = [(d, m_, get(results, m_, d, "A_baseline__ep4"))
           for d in EPOCH_DATASETS for m_ in ("distilbert", "bert")]
@@ -927,9 +1054,13 @@ def summary_markdown(results: dict) -> str:
                 "| Dataset | Model | " + " | ".join(str(i) for i in range(1, n_ep + 1)) +
                 " | Best |", "|---" * (3 + n_ep) + "|"]
         for d, m_, r in ep:
-            cells = " | ".join(f"{x['val_f1_macro']*100:.2f}" for x in r["training"]["per_epoch"])
+            cells = " | ".join(mark_best([x["val_f1_macro"] * 100 for x in r["training"]["per_epoch"]],
+                                         "{:.2f}", True, bold="md"))
             out.append(f"| {DATASET_LABEL[d]} | {MODEL_LABEL[m_]} | {cells} | "
                        f"{r['training']['best_epoch_by_val_f1']} |")
+
+        out += fig("fig9_epoch_study",
+                   "Validation F1 macro at every epoch boundary, dashed lines are the test split")
 
     web = os.path.join(WEB_DIR, "words.json")
     if os.path.exists(web):
@@ -951,27 +1082,41 @@ def summary_markdown(results: dict) -> str:
                 teacher = ("embedding output" if row["bert_layer"] == 0
                            else f"block {row['bert_layer']}")
                 out.append(f"| {depth} | {teacher} | {row['cka']:.3f} | {row['overlap']:.2f} |")
+            out += fig("fig8_representation_similarity",
+                       "Neighbour agreement between the two encoders, and how alignment falls with depth")
     return "\n".join(out) + "\n"
 
 
 def update_readme(results: dict, path: str = "README.md") -> None:
-    """Splice the generated summary into README.md between its own headings."""
-    if not os.path.exists(path):
-        return
-    text = pathlib.Path(path).read_text()
+    """Write the generated summary, and splice it into a README that asks for it.
+
+    The canonical copy always lands in artifacts/tables/results_summary.md. A README
+    is only rewritten if it carries the "## Results summary" heading, so a hand
+    edited one is never clobbered; if it does not, we say so loudly instead of
+    silently doing nothing.
+    """
     block = summary_markdown(results)
+    os.makedirs(TABLES_DIR, exist_ok=True)
+    canonical = os.path.join(TABLES_DIR, "results_summary.md")
+    pathlib.Path(canonical).write_text(block)
+    print(f"  wrote {canonical}", flush=True)
+
     marker = "## Results summary"
-    if marker in text:
+    for target in (path, "README_backup.md"):
+        if not os.path.exists(target):
+            continue
+        text = pathlib.Path(target).read_text()
+        if marker not in text:
+            if target == path:
+                print(f"  NOTE: {target} has no '{marker}' heading, so it was left untouched. "
+                      f"The generated tables are in {canonical}.", flush=True)
+            continue
         start = text.index(marker)
         rest = text[start + len(marker):]
         nxt = rest.find("\n## ")
         end = len(text) if nxt == -1 else start + len(marker) + nxt + 1
-        text = text[:start] + block + "\n" + text[end:]
-    else:
-        anchor = "## What is compared"
-        text = text.replace(anchor, block + "\n" + anchor, 1)
-    pathlib.Path(path).write_text(text)
-    print("  README results summary updated", flush=True)
+        pathlib.Path(target).write_text(text[:start] + block + "\n" + text[end:])
+        print(f"  {target} results summary updated", flush=True)
 
 
 # Tables the report reads. Any of these without data becomes an explicit
