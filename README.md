@@ -15,9 +15,9 @@ DistilBERT is the student of a knowledge distillation procedure that keeps every
 
 The design implies to cut the depth on Bert while width, vocabulary and attention mechanisms are untouched. Therefore our evaluation focus on, how much of the teacher behaviour survived the cut?
 
-## Approach
+To answer that first we will define the setup.
 
-These are the basic configurations for the employed arquitectures.
+These are the configurations for the arquitectures.
 | | BERT base | DistilBERT base |
 |---|---|---|
 | Transformer blocks | 12 | 6 |
@@ -149,7 +149,9 @@ the model actually needs and not what the caching allocator happened to reserve.
 **Training dynamics.** Training loss and validation loss recorded at twelve equally spaced points across the
 run, the validation loss computed on the held out slice.
 
-## Reproducing the results
+## Reproducibility
+
+Execute the following commands to reproduce our results
 
 ### Local, one GPU
 
@@ -175,7 +177,7 @@ python src/run.py --mode single --model bert --dataset sst2 --head E_wide
 Results are cached. A run whose JSON file already exists is skipped, so the pipeline can be interrupted and
 resumed. Pass --overwrite to force a rerun.
 
-### On the Khipu cluster
+### Setup for Khipu
 
 The compute node has no internet access, so the checkpoints and datasets are downloaded first on the login
 node and the job then runs offline.
@@ -205,9 +207,10 @@ bash cluster/sync_from_khipu.sh
 python src/figures.py
 ```
 
-## Experiments
+## Experiments and Results
 
 ### Performace
+We evaluated the performance in the four datasets for both models.
 
 | Dataset | Model | Accuracy | Precision | Recall | F1 macro |
 |---|---|---|---|---|---|
@@ -272,7 +275,7 @@ Topic purity of the ten nearest neighbours: BERT 68.7 percent, DistilBERT 72.2 p
 
 ## The interactive comparison
 
-web/index.html is a d3 v7 page that puts the two latent spaces side by side. It has two views.
+To assess the analysis, we built a d3 page on web/index.html that puts the two latent spaces side by side. It has two views.
 
 **Words.** 496 words across 20 topics, each embedded on its own by the two **pretrained** checkpoints, with
 the sub token vectors of the final layer averaged. Type a word into the search box and the page shows the
