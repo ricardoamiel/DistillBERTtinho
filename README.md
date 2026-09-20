@@ -5,13 +5,28 @@ Ricardo Amiel Acuña Villogas. \
 Juan Leibniz Aquino Espinoza. \
 Josué Nehemías Velo Poma.
 
-Fine tuning of DistilBERT and BERT base on four text classification datasets under one controlled
-protocol, an ablation over the classifier head, and an interactive tool that compares the two latent
-spaces word by word.
+Presentamos una implementación del modelo DistillBERT y comparación con el modelo base BERT.
+Es un enfoque de fine-tuning para resolver la tarea de Text Classification en los datasets:
 
-Everything reported here is produced by the code in this repository. Each training run writes one JSON
-file into artifacts/results, and every figure, table and number in the report is generated from those
-files by src/figures.py. No result is transcribed by hand.
+- AG News
+- SST-2
+- Yelp Reviews 
+
+Métricas de validación:
+- Desempeño
+- Accuracy
+- Precision
+- Recall
+- F1-score
+
+Medimos la eficiencia como: 
+- Número de parámetros vs Accuracy
+- Latencia (tiempo de inferencia)
+- Uso de memoria GPU
+
+Métricas de entrenamiento:
+- Número de iteraciones vs (Training loss & Validation loss)
+
 
 ## Results summary
 
