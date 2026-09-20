@@ -1,0 +1,592 @@
+<title>Distilled Geometry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+
+<style>
+:root {
+  color-scheme: light only;
+  --bg: #f4f6f9;
+  --surface: #ffffff;
+  --surface-2: #eef1f6;
+  --line: #dbe0e9;
+  --line-soft: #e8ecf2;
+  --ink: #10151d;
+  --ink-2: #4d5766;
+  --ink-3: #79838f;
+  --bert: #eb6834;
+  --distil: #2a78d6;
+  --shared: #1baf7a;
+  --dot: #c3cad6;
+  --cls-1: #2a78d6;
+  --cls-2: #eb6834;
+  --cls-3: #1baf7a;
+  --cls-4: #4a3aa7;
+  --shadow: 0 1px 2px rgba(16, 21, 29, .06), 0 8px 24px rgba(16, 21, 29, .05);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-inline: 20px;
+  padding-block: 28px 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+/* header */
+header { display: flex; flex-direction: column; gap: 8px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-3);
+}
+h1 {
+  margin: 0; font-size: clamp(26px, 4.4vw, 38px); font-weight: 600;
+  letter-spacing: -.022em; text-wrap: balance; line-height: 1.12;
+}
+.lede { margin: 0; max-width: 66ch; color: var(--ink-2); font-size: 15px; }
+
+/* stat strip */
+.stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.stat { background: var(--surface); padding: 14px 16px; display: flex; flex-direction: column; gap: 3px; }
+.stat .k { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); font-family: "IBM Plex Mono", monospace; }
+.stat .v { font-size: 22px; font-weight: 600; letter-spacing: -.02em; font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+.stat .s { font-size: 12px; color: var(--ink-2); }
+@media (max-width: 1000px) { .stats { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 680px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+
+/* controls */
+.controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.seg { display: inline-flex; background: var(--surface-2); border: 1px solid var(--line); border-radius: 8px; padding: 2px; gap: 2px; }
+.seg button {
+  font: inherit; font-size: 13px; border: 0; background: transparent; color: var(--ink-2);
+  padding: 6px 13px; border-radius: 6px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: var(--shadow); }
+.seg button:focus-visible, input:focus-visible, .chip:focus-visible { outline: 2px solid var(--distil); outline-offset: 2px; }
+
+.search { position: relative; flex: 1 1 260px; min-width: 200px; max-width: 380px; }
+.search input {
+  width: 100%; font: inherit; font-family: "IBM Plex Mono", monospace; font-size: 13px;
+  padding: 9px 12px; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink);
+}
+.search input::placeholder { color: var(--ink-3); }
+.suggest {
+  position: absolute; z-index: 30; top: calc(100% + 4px); left: 0; right: 0;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px;
+  box-shadow: var(--shadow); max-height: 240px; overflow-y: auto; padding: 4px;
+}
+.suggest button {
+  display: flex; justify-content: space-between; gap: 10px; width: 100%; text-align: left;
+  font: inherit; font-size: 13px; border: 0; background: transparent; color: var(--ink);
+  padding: 6px 9px; border-radius: 6px; cursor: pointer; font-family: "IBM Plex Mono", monospace;
+}
+.suggest button:hover, .suggest button[data-active="true"] { background: var(--surface-2); }
+.suggest .g { color: var(--ink-3); font-size: 11px; }
+
+/* panels */
+.panels { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 860px) { .panels { grid-template-columns: 1fr; } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; }
+.panel h2 { margin: 0; padding: 12px 16px; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid var(--line-soft); }
+.chipdot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.panel h2 .tag { margin-left: auto; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--ink-3); font-weight: 400; }
+.plot { display: block; width: 100%; height: auto; }
+
+/* neighbours */
+.nbwrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 860px) { .nbwrap { grid-template-columns: 1fr; } }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 6px 16px; border-bottom: 1px solid var(--line-soft); }
+th { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; font-family: "IBM Plex Mono", monospace; }
+td.rank, td.score { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+td.rank { width: 30px; }
+td.score { text-align: right; width: 64px; }
+td.w { font-family: "IBM Plex Mono", monospace; }
+tr[data-shared="true"] td.w { font-weight: 600; }
+tr[data-shared="true"] td.w::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--shared); margin-right: 8px; vertical-align: middle; }
+tr[data-shared="false"] td.w::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: transparent; border: 1px solid var(--line); margin-right: 8px; vertical-align: middle; }
+tbody tr:last-child td { border-bottom: 0; }
+
+.verdict { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-wrap: wrap; gap: 10px 26px; align-items: baseline; box-shadow: var(--shadow); }
+.verdict .big { font-family: "IBM Plex Mono", monospace; font-size: 20px; font-weight: 600; }
+.verdict .t { color: var(--ink-2); font-size: 13px; max-width: 62ch; }
+
+/* chips */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: inherit; font-size: 12px; font-family: "IBM Plex Mono", monospace; border: 1px solid var(--line); background: var(--surface); color: var(--ink-2); padding: 4px 10px; border-radius: 999px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+/* table of runs */
+.runs { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); overflow-x: auto; }
+.runs table { min-width: 620px; }
+.runs td.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; text-align: right; }
+.runs caption { text-align: left; padding: 12px 16px 6px; font-size: 14px; font-weight: 600; }
+
+.note { color: var(--ink-2); font-size: 13px; max-width: 78ch; }
+.note b { color: var(--ink); font-weight: 600; }
+footer { color: var(--ink-3); font-size: 12px; border-top: 1px solid var(--line); padding-top: 14px; }
+
+#tip {
+  position: fixed; z-index: 60; pointer-events: none; background: var(--ink); color: var(--bg);
+  padding: 5px 9px; border-radius: 6px; font-size: 12px; font-family: "IBM Plex Mono", monospace;
+  max-width: 280px; opacity: 0; transition: opacity .1s;
+}
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--ink-2); align-items: center; }
+.legend span.key { display: inline-flex; align-items: center; gap: 6px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Project 1 &middot; BERT against DistilBERT</div>
+    <h1>Distilled Geometry</h1>
+    <p class="lede">DistilBERT keeps six of BERT's twelve transformer blocks and drops about 40 percent of the
+      weights. The question this page answers by hand: does the smaller model still arrange language
+      the same way? Search a word, and compare what each model considers its closest relatives.</p>
+  </header>
+
+  <section class="stats" id="stats" aria-label="Headline numbers"></section>
+
+  <section class="verdict" id="verdict"></section>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="What to plot">
+      <button id="mode-words" aria-pressed="true">Words</button>
+      <button id="mode-sent" aria-pressed="false">AG News sentences</button>
+    </div>
+    <div class="search" id="searchwrap">
+      <input id="q" type="search" placeholder="Search a word, for example guitar" autocomplete="off"
+             aria-label="Search a word" spellcheck="false">
+      <div class="suggest" id="suggest" hidden></div>
+    </div>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <section class="panels">
+    <div class="panel">
+      <h2><span class="chipdot" style="background: var(--bert)"></span> BERT base<span class="tag" id="tag-bert">110M parameters</span></h2>
+      <svg class="plot" id="plot-bert" viewBox="0 0 460 380" role="img" aria-label="Latent space of BERT"></svg>
+    </div>
+    <div class="panel">
+      <h2><span class="chipdot" style="background: var(--distil)"></span> DistilBERT base<span class="tag" id="tag-distil">66M parameters</span></h2>
+      <svg class="plot" id="plot-distil" viewBox="0 0 460 380" role="img" aria-label="Latent space of DistilBERT"></svg>
+    </div>
+  </section>
+
+  <section class="chips" id="groupchips" aria-label="Highlight a topic"></section>
+
+  <section class="nbwrap" id="nbwrap">
+    <div class="panel">
+      <h2><span class="chipdot" style="background: var(--bert)"></span> BERT neighbours</h2>
+      <table><thead><tr><th>#</th><th>Word</th><th style="text-align:right">Cosine</th></tr></thead>
+        <tbody id="nb-bert"></tbody></table>
+    </div>
+    <div class="panel">
+      <h2><span class="chipdot" style="background: var(--distil)"></span> DistilBERT neighbours</h2>
+      <table><thead><tr><th>#</th><th>Word</th><th style="text-align:right">Cosine</th></tr></thead>
+        <tbody id="nb-distil"></tbody></table>
+    </div>
+  </section>
+
+  <section class="panel" id="depthpanel">
+    <h2>Where the two models agree, layer by layer<span class="tag">student block d against teacher block 2d</span></h2>
+    <svg class="plot" id="plot-depth" viewBox="0 0 900 230" role="img"
+         aria-label="Alignment between BERT and DistilBERT at matched depths"></svg>
+    <p class="note" id="depthnote" style="padding: 0 16px 14px; margin: 0;"></p>
+  </section>
+
+  <section class="runs" id="runs"></section>
+
+  <p class="note" id="method"></p>
+
+  <footer>
+    Ricardo Amiel Acu&ntilde;a Villogas, Juan Leibniz Aquino Espinoza, Josu&eacute; Nehem&iacute;as Velo Poma.
+    Fine tuning run on one NVIDIA RTX A6000. Numbers are read from the experiment output, not typed in by hand.
+  </footer>
+</div>
+<div id="tip" role="status"></div>
+
+<script>
+const MODELS = ["bert", "distilbert"];
+const PLOT = { w: 460, h: 380, pad: 18 };
+const state = { mode: "words", sel: null, group: null, words: null, sents: null, summary: null };
+const tip = document.getElementById("tip");
+
+function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+const fmt = d3.format(".3f");
+
+async function boot() {
+  const [words, sents, summary] = await Promise.all([
+    d3.json("data/words.json").catch(() => null),
+    d3.json("data/sentences.json").catch(() => null),
+    d3.json("data/summary.json").catch(() => null),
+  ]);
+  state.words = words; state.sents = sents; state.summary = summary;
+  if (!words) {
+    document.getElementById("verdict").innerHTML =
+      '<span class="t">Run <span class="mono">python src/export_embeddings.py</span> first, then serve this folder with <span class="mono">python -m http.server</span>.</span>';
+    return;
+  }
+  renderStats(); renderVerdict(); renderGroupChips(); renderRuns(); renderDepth(); renderMethod();
+  wireControls();
+  select(words.words.find(w => w.word === "guitar") || words.words[0]);
+}
+
+/* ---------- headline numbers ---------- */
+function runsBy(model) {
+  if (!state.summary) return [];
+  return state.summary.runs.filter(r => r.model === model);
+}
+function mean(a) { return a.length ? a.reduce((x, y) => x + y, 0) / a.length : NaN; }
+
+function renderStats() {
+  const b = runsBy("bert"), d = runsBy("distilbert");
+  const pB = b.length ? b[0].params_m : 109.5, pD = d.length ? d[0].params_m : 66.9;
+  const accB = mean(b.map(r => r.accuracy)), accD = mean(d.map(r => r.accuracy));
+  const latB = mean(b.map(r => r.latency_ms)), latD = mean(d.map(r => r.latency_ms));
+  const thrB = mean(b.map(r => r.throughput)), thrD = mean(d.map(r => r.throughput));
+  const cards = [
+    { k: "Size", v: (100 * (1 - pD / pB)).toFixed(0) + "%", s: `smaller: ${pD.toFixed(1)}M against ${pB.toFixed(1)}M parameters` },
+  ];
+  // The speed and accuracy tiles only exist once the fine tuning results are present.
+  if (isFinite(thrB) && isFinite(thrD) && thrB > 0) {
+    cards.push({ k: "Throughput", v: (thrD / thrB).toFixed(2) + "x",
+                 s: `${thrD.toFixed(0)} against ${thrB.toFixed(0)} samples per second at batch 32, ` +
+                    `which is where halving the depth actually pays` });
+  }
+  if (isFinite(accD) && isFinite(accB)) {
+    cards.push({ k: "Accuracy kept", v: (100 * accD / accB).toFixed(1) + "%",
+                 s: `mean ${accD.toFixed(1)} against ${accB.toFixed(1)} over ${b.length} datasets` });
+  }
+  cards.push({ k: "Same neighbours",
+               v: state.words.meta.mean_overlap.toFixed(1) + " / " + state.words.meta.top_k,
+               s: `agreement on the closest words, CKA ${state.words.meta.cka.toFixed(3)}` });
+  const pur = state.words.meta.purity;
+  if (pur) {
+    const ahead = (pur.distilbert - pur.bert) * 100;
+    cards.push({
+      k: "Topic purity",
+      v: (pur.distilbert * 100).toFixed(0) + "%",
+      s: `of DistilBERT neighbours share the query topic, against ${(pur.bert * 100).toFixed(0)}% for BERT, ` +
+         (ahead >= 0 ? `so the smaller model is ${ahead.toFixed(1)} points ahead here` : `so BERT is ${(-ahead).toFixed(1)} points ahead here`),
+    });
+  }
+  const strip = document.getElementById("stats");
+  strip.style.gridTemplateColumns = `repeat(${Math.min(cards.length, 5)}, 1fr)`;
+  strip.innerHTML = cards.map(c =>
+    `<div class="stat"><span class="k">${c.k}</span><span class="v">${c.v}</span><span class="s">${c.s}</span></div>`).join("");
+  if (d.length) document.getElementById("tag-distil").textContent = pD.toFixed(1) + "M parameters";
+  if (b.length) document.getElementById("tag-bert").textContent = pB.toFixed(1) + "M parameters";
+}
+
+function renderVerdict() {
+  const m = state.words.meta;
+  document.getElementById("verdict").innerHTML =
+    `<span class="big" style="color: var(--shared)">${m.overlap_pct}%</span>
+     <span class="t">of the ten closest words that BERT picks for a given word are also picked by DistilBERT,
+     measured in the full 768 dimensional space over ${m.n_words} words. Linear CKA between the two
+     representation matrices is ${m.cka.toFixed(3)}, where 1.0 would mean identical geometry.</span>`;
+}
+
+/* ---------- plots ---------- */
+function points() {
+  if (state.mode === "words") return state.words.words;
+  return state.sents ? state.sents.sentences : [];
+}
+function clsColor(i) { return css(["--cls-1", "--cls-2", "--cls-3", "--cls-4"][i % 4]); }
+
+function scales() {
+  const p = PLOT.pad;
+  return {
+    x: d3.scaleLinear([0, 1], [p, PLOT.w - p]),
+    y: d3.scaleLinear([0, 1], [PLOT.h - p, p]),
+  };
+}
+
+function draw() {
+  const data = points(), { x, y } = scales();
+  const sel = state.sel;
+  MODELS.forEach(model => {
+    const svg = d3.select("#plot-" + (model === "bert" ? "bert" : "distil"));
+    svg.selectAll("*").remove();
+    const color = css(model === "bert" ? "--bert" : "--distil");
+    const links = svg.append("g"), dots = svg.append("g"), labels = svg.append("g");
+
+    const nbSet = new Set(), sharedSet = new Set();
+    if (state.mode === "words" && sel) {
+      const a = new Set(sel.nn.bert.map(n => n.i)), b = new Set(sel.nn.distilbert.map(n => n.i));
+      sel.nn[model].forEach(n => { nbSet.add(n.i); if (a.has(n.i) && b.has(n.i)) sharedSet.add(n.i); });
+      sel.nn[model].forEach(n => {
+        const t = data[n.i];
+        links.append("line")
+          .attr("x1", x(sel[model][0])).attr("y1", y(sel[model][1]))
+          .attr("x2", x(t[model][0])).attr("y2", y(t[model][1]))
+          .attr("stroke", sharedSet.has(n.i) ? css("--shared") : color)
+          .attr("stroke-width", 1).attr("stroke-opacity", .45);
+      });
+    }
+
+    dots.selectAll("circle").data(data).join("circle")
+      .attr("cx", d => x(d[model][0])).attr("cy", d => y(d[model][1]))
+      .attr("r", d => {
+        if (sel && d.i === sel.i) return 6.5;
+        if (nbSet.has(d.i)) return 4.2;
+        if (state.group && d.group === state.group) return 3.4;
+        return 2.4;
+      })
+      .attr("fill", d => {
+        if (state.mode === "sentences") return clsColor(d.label);
+        if (sel && d.i === sel.i) return color;
+        if (sharedSet.has(d.i)) return css("--shared");
+        if (nbSet.has(d.i)) return color;
+        if (state.group && d.group === state.group) return css("--ink");
+        return css("--dot");
+      })
+      .attr("fill-opacity", d => (state.mode === "sentences" ? .72 : 1))
+      .attr("stroke", d => (sel && d.i === sel.i ? css("--surface") : "none"))
+      .attr("stroke-width", 2)
+      .style("cursor", state.mode === "words" ? "pointer" : "default")
+      .on("mousemove", (e, d) => showTip(e, state.mode === "words" ? `${d.word}  (${d.group})` : d.text))
+      .on("mouseleave", hideTip)
+      .on("click", (e, d) => { if (state.mode === "words") select(d); });
+
+    if (state.mode === "sentences" && state.sents) {
+      // Direct class labels at the centroid, so identity never rests on colour alone.
+      state.sents.labels.forEach((name, li) => {
+        const sub = data.filter(d => d.label === li);
+        if (!sub.length) return;
+        const cx = d3.mean(sub, d => x(d[model][0])), cy = d3.mean(sub, d => y(d[model][1]));
+        labels.append("text").attr("x", cx).attr("y", cy)
+          .attr("text-anchor", "middle").attr("font-size", 12).attr("font-weight", 600)
+          .attr("font-family", "IBM Plex Mono, monospace")
+          .attr("paint-order", "stroke").attr("stroke", css("--surface")).attr("stroke-width", 4)
+          .attr("fill", clsColor(li)).text(name);
+      });
+    }
+    if (state.mode === "words" && sel) {
+      labels.append("text").attr("x", x(sel[model][0])).attr("y", y(sel[model][1]) - 11)
+        .attr("text-anchor", "middle").attr("font-size", 12).attr("font-weight", 600)
+        .attr("font-family", "IBM Plex Mono, monospace")
+        .attr("paint-order", "stroke").attr("stroke", css("--surface")).attr("stroke-width", 4)
+        .attr("fill", css("--ink")).text(sel.word);
+    }
+  });
+  renderLegend();
+}
+
+function showTip(e, text) {
+  tip.textContent = text;
+  tip.style.opacity = 1;
+  const r = tip.getBoundingClientRect();
+  tip.style.left = Math.min(e.clientX + 12, window.innerWidth - r.width - 10) + "px";
+  tip.style.top = Math.max(e.clientY - r.height - 10, 8) + "px";
+}
+function hideTip() { tip.style.opacity = 0; }
+
+function renderLegend() {
+  const el = document.getElementById("legend");
+  if (state.mode === "sentences" && state.sents) {
+    el.innerHTML = state.sents.labels.map((n, i) =>
+      `<span class="key"><span class="chipdot" style="background:${clsColor(i)}"></span>${n}</span>`).join("");
+  } else {
+    el.innerHTML =
+      `<span class="key"><span class="chipdot" style="background:var(--shared)"></span>neighbour both models agree on</span>
+       <span class="key"><span class="chipdot" style="background:var(--dot)"></span>other words</span>`;
+  }
+}
+
+/* ---------- neighbour tables ---------- */
+function renderNeighbours() {
+  const sel = state.sel, data = state.words.words;
+  if (!sel) return;
+  const a = new Set(sel.nn.bert.map(n => n.i)), b = new Set(sel.nn.distilbert.map(n => n.i));
+  MODELS.forEach(model => {
+    const body = document.getElementById("nb-" + (model === "bert" ? "bert" : "distil"));
+    body.innerHTML = sel.nn[model].map((n, i) => {
+      const shared = a.has(n.i) && b.has(n.i);
+      return `<tr data-shared="${shared}"><td class="rank">${i + 1}</td>
+        <td class="w">${data[n.i].word}</td><td class="score">${fmt(n.s)}</td></tr>`;
+    }).join("");
+  });
+}
+
+/* ---------- selection and search ---------- */
+function select(w) {
+  state.sel = w;
+  document.getElementById("q").value = w.word;
+  draw();
+  renderNeighbours();
+  const shared = w.overlap, k = state.words.meta.top_k;
+  document.getElementById("nbwrap").setAttribute("aria-label",
+    `${shared} of ${k} neighbours of ${w.word} are shared`);
+}
+
+function wireControls() {
+  const q = document.getElementById("q"), sug = document.getElementById("suggest");
+  let active = -1, items = [];
+
+  function closeSuggest() { sug.hidden = true; active = -1; }
+  function openSuggest(list) {
+    items = list;
+    if (!list.length) return closeSuggest();
+    sug.innerHTML = list.map((w, i) =>
+      `<button data-i="${w.i}" data-active="${i === active}">${w.word}<span class="g">${w.group}</span></button>`).join("");
+    sug.hidden = false;
+    sug.querySelectorAll("button").forEach(btn => btn.addEventListener("mousedown", e => {
+      e.preventDefault();
+      select(state.words.words[+btn.dataset.i]); closeSuggest();
+    }));
+  }
+  q.addEventListener("input", () => {
+    const t = q.value.trim().toLowerCase();
+    if (!t) return closeSuggest();
+    active = 0;
+    openSuggest(state.words.words.filter(w => w.word.startsWith(t)).slice(0, 8));
+  });
+  q.addEventListener("keydown", e => {
+    if (sug.hidden) return;
+    if (e.key === "ArrowDown") { active = Math.min(active + 1, items.length - 1); openSuggest(items); e.preventDefault(); }
+    else if (e.key === "ArrowUp") { active = Math.max(active - 1, 0); openSuggest(items); e.preventDefault(); }
+    else if (e.key === "Enter") { if (items[active]) { select(items[active]); closeSuggest(); } e.preventDefault(); }
+    else if (e.key === "Escape") closeSuggest();
+  });
+  q.addEventListener("blur", () => setTimeout(closeSuggest, 120));
+
+  const mw = document.getElementById("mode-words"), ms = document.getElementById("mode-sent");
+  function setMode(mode) {
+    state.mode = mode;
+    mw.setAttribute("aria-pressed", mode === "words");
+    ms.setAttribute("aria-pressed", mode === "sentences");
+    document.getElementById("searchwrap").hidden = mode !== "words";
+    document.getElementById("nbwrap").hidden = mode !== "words";
+    document.getElementById("groupchips").hidden = mode !== "words";
+    draw();
+  }
+  mw.addEventListener("click", () => setMode("words"));
+  ms.addEventListener("click", () => { if (state.sents) setMode("sentences"); });
+  if (!state.sents) ms.disabled = true;
+
+}
+
+function renderGroupChips() {
+  const el = document.getElementById("groupchips");
+  el.innerHTML = state.words.groups.map(g =>
+    `<button class="chip" data-g="${g}" aria-pressed="false">${g.replace(/_/g, " ")}</button>`).join("");
+  el.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => {
+    const on = c.getAttribute("aria-pressed") === "true";
+    el.querySelectorAll(".chip").forEach(o => o.setAttribute("aria-pressed", "false"));
+    c.setAttribute("aria-pressed", String(!on));
+    state.group = on ? null : c.dataset.g;
+    draw();
+  }));
+}
+
+function renderRuns() {
+  if (!state.summary || !state.summary.runs.length) { document.getElementById("runs").hidden = true; return; }
+  const names = { ag_news: "AG News", sst2: "SST 2", yelp_polarity: "Yelp Polarity", yelp_full: "Yelp Full" };
+  const rows = state.summary.runs.map(r => `<tr>
+      <td>${names[r.dataset] || r.dataset}</td>
+      <td>${r.model === "bert" ? "BERT" : "DistilBERT"}</td>
+      <td class="num">${r.accuracy.toFixed(2)}</td>
+      <td class="num">${r.f1_macro.toFixed(2)}</td>
+      <td class="num">${r.params_m.toFixed(1)}</td>
+      <td class="num">${r.latency_ms.toFixed(2)}</td>
+      <td class="num">${(r.train_gpu_mb / 1024).toFixed(2)}</td></tr>`).join("");
+  document.getElementById("runs").innerHTML =
+    `<table><caption>Fine tuning results behind the numbers above</caption>
+      <thead><tr><th>Dataset</th><th>Model</th><th style="text-align:right">Accuracy</th>
+      <th style="text-align:right">F1 macro</th><th style="text-align:right">Params M</th>
+      <th style="text-align:right">GPU ms</th><th style="text-align:right">Train GiB</th></tr></thead>
+      <tbody>${rows}</tbody></table>`;
+}
+
+function renderDepth() {
+  const prof = state.words.meta.layer_profile;
+  const panel = document.getElementById("depthpanel");
+  if (!prof || !prof.length) { panel.hidden = true; return; }
+
+  const W = 900, H = 230, m = { t: 16, r: 54, b: 40, l: 52 };
+  const svg = d3.select("#plot-depth"); svg.selectAll("*").remove();
+  const x = d3.scalePoint(prof.map(d => d.distil_layer), [m.l, W - m.r]).padding(0.12);
+  const y = d3.scaleLinear([0, 1], [H - m.b, m.t]);
+
+  const grid = svg.append("g");
+  [0, 0.25, 0.5, 0.75, 1].forEach(v => {
+    grid.append("line").attr("x1", m.l).attr("x2", W - m.r).attr("y1", y(v)).attr("y2", y(v))
+      .attr("stroke", css("--line-soft")).attr("stroke-width", 1);
+    grid.append("text").attr("x", m.l - 9).attr("y", y(v) + 4).attr("text-anchor", "end")
+      .attr("font-size", 11).attr("fill", css("--ink-3"))
+      .attr("font-family", "IBM Plex Mono, monospace").text(v.toFixed(2));
+  });
+
+  const line = d3.line().x(d => x(d.distil_layer)).y(d => y(d.cka));
+  svg.append("path").datum(prof).attr("d", line).attr("fill", "none")
+    .attr("stroke", css("--distil")).attr("stroke-width", 2.5);
+
+  svg.selectAll("circle.cka").data(prof).join("circle").attr("class", "cka")
+    .attr("cx", d => x(d.distil_layer)).attr("cy", d => y(d.cka)).attr("r", 5)
+    .attr("fill", css("--distil")).attr("stroke", css("--surface")).attr("stroke-width", 2)
+    .on("mousemove", (e, d) => showTip(e,
+      `DistilBERT block ${d.distil_layer} vs BERT block ${d.bert_layer}: CKA ${d.cka.toFixed(3)}, ` +
+      `${d.overlap.toFixed(1)} of 10 neighbours shared`))
+    .on("mouseleave", hideTip);
+
+  svg.selectAll("text.val").data(prof).join("text").attr("class", "val")
+    .attr("x", d => x(d.distil_layer)).attr("y", d => y(d.cka) - 12)
+    .attr("text-anchor", "middle").attr("font-size", 11).attr("font-weight", 600)
+    .attr("font-family", "IBM Plex Mono, monospace").attr("fill", css("--ink"))
+    .text(d => d.cka.toFixed(3));
+
+  svg.selectAll("text.xl").data(prof).join("text").attr("class", "xl")
+    .attr("x", d => x(d.distil_layer)).attr("y", H - m.b + 18).attr("text-anchor", "middle")
+    .attr("font-size", 11).attr("font-family", "IBM Plex Mono, monospace")
+    .attr("fill", css("--ink-2"))
+    .text(d => (d.distil_layer === 0 ? "embeddings" : "D" + d.distil_layer + " / B" + d.bert_layer));
+
+  svg.append("text").attr("x", m.l).attr("y", H - 6).attr("font-size", 11)
+    .attr("fill", css("--ink-3")).text("depth, from the embeddings to the last block");
+  svg.append("text").attr("transform", `rotate(-90) translate(${-(H - m.b + m.t) / 2}, 14)`)
+    .attr("text-anchor", "middle").attr("font-size", 11).attr("fill", css("--ink-3"))
+    .text("Linear CKA");
+
+  const first = prof[0], last = prof[prof.length - 1];
+  const mid = prof[Math.floor(prof.length / 2)];
+  document.getElementById("depthnote").innerHTML =
+    `<b>Read this as the shape of the concession.</b> At the embeddings the two models are almost the same
+     space (CKA ${first.cka.toFixed(3)}). Through the middle they stay close (${mid.cka.toFixed(3)} at
+     DistilBERT block ${mid.distil_layer} against BERT block ${mid.bert_layer}). Only at the top do they
+     part (${last.cka.toFixed(3)}), which is exactly where a transformer stores what is specific to its
+     pretraining objective. Distillation kept the shared foundation and let the specialised top drift.`;
+}
+
+function renderMethod() {
+  document.getElementById("method").innerHTML =
+    `<b>How to read this.</b> Each word is passed on its own through the pretrained encoder. Its sub token
+     vectors are averaged at every layer, those layers are averaged together, and the mean over all words is
+     subtracted, which removes the narrow cone that last layer BERT vectors are known to sit in. That gives
+     one 768 dimensional vector per word per model.
+     Neighbours, the agreement percentage and CKA are all computed on those full vectors. The scatter plots
+     are a 2D view of the same vectors, PCA down to 50 dimensions then t-SNE down to 2, with the DistilBERT
+     layout rotated onto the BERT layout so the two panels can be compared by eye. The sentence view uses
+     the encoders after fine tuning on AG News and shows the CLS vector of each test sentence.
+     Topic purity counts how many of a word's ten neighbours carry the same topic label as the word itself,
+     where the labels are used only to score the result and are never given to either model.`;
+}
+
+boot();
+</script>

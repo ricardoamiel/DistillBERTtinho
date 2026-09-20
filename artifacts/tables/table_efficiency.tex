@@ -1,0 +1,14 @@
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Efficiency averaged over the four datasets. Latency is the median of 200 single example passes; total minutes is the sum over the four runs.}
+\label{tab:eff}
+\begin{tabular}{lrrrrrrr}
+\toprule
+Model & Params (M) & GPU ms & CPU ms & Samples/s & Train GiB & Infer MiB & Total min \\
+\midrule
+DistilBERT & 67.0 & 2.57 & 34.5 & 1830 & 1.48 & 475 & 7 \\
+BERT & 110.1 & 4.25 & 62.7 & 914 & 2.64 & 640 & 11 \\
+\bottomrule
+\end{tabular}
+\end{table}

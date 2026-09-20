@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.ipynb_checkpoints/
+
+# Datasets and model caches, never committed.
+# The leading slash matters: it keeps this from swallowing web/data, which holds
+# the exported demo data and must be committed.
+/data/
+/datasets/
+.cache/
+hf_cache/
+*.arrow
+*.parquet
+*.csv
+*.tsv
+*.zip
+*.tar.gz
+
+# Fine tuned weights, too large for the repository
+artifacts/encoders/
+*.pt
+*.bin
+*.safetensors
+*.ckpt
+
+# Reference PDFs and course material, kept locally only
+papers/
+*.pdf
+!report/main.pdf
+!artifacts/figures/*.pdf
+
+# LaTeX build products
+report/*.aux
+report/*.log
+report/*.out
+report/*.bbl
+report/*.blg
+report/*.fls
+report/*.fdb_latexmk
+report/*.synctex.gz
+report/*.toc
+
+# Editor and operating system noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp

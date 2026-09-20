@@ -1,0 +1,180 @@
+{
+  "run_id": "bert__sst2__A_baseline",
+  "model": "bert",
+  "checkpoint": "bert-base-uncased",
+  "dataset": "sst2",
+  "head": {
+    "key": "A_baseline",
+    "label": "Baseline head 1x768, full fine tuning",
+    "hidden_sizes": [
+      768
+    ],
+    "frozen_layers": 0,
+    "dropout": 0.1,
+    "note": "Reproduces the default DistilBERT classification head."
+  },
+  "train_config": {
+    "epochs": 2,
+    "batch_size": 32,
+    "eval_batch_size": 64,
+    "lr_backbone": 2e-05,
+    "lr_head": 0.0001,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.06,
+    "max_grad_norm": 1.0,
+    "eval_points": 12,
+    "val_subset": 2000,
+    "val_fraction": 0.05,
+    "amp": true,
+    "seed": 42
+  },
+  "dataset_sizes": {
+    "train": 63981,
+    "val": 3368,
+    "test": 872
+  },
+  "num_labels": 2,
+  "label_names": [
+    "negative",
+    "positive"
+  ],
+  "max_length": 64,
+  "params": {
+    "total_params": 110074370,
+    "trainable_params": 110074370,
+    "frozen_params": 0,
+    "head_params": 592130,
+    "backbone_params": 109482240,
+    "num_transformer_blocks": 12
+  },
+  "metrics": {
+    "accuracy": 0.926605504587156,
+    "precision_macro": 0.9270833333333333,
+    "recall_macro": 0.9263281973562347,
+    "f1_macro": 0.9265297525013165,
+    "precision_weighted": 0.9268922018348624,
+    "recall_weighted": 0.926605504587156,
+    "f1_weighted": 0.9265730394075105,
+    "per_class": {
+      "precision": [
+        0.9375,
+        0.9166666666666666
+      ],
+      "recall": [
+        0.9112149532710281,
+        0.9414414414414415
+      ],
+      "f1": [
+        0.9241706161137441,
+        0.9288888888888889
+      ],
+      "support": [
+        428,
+        444
+      ]
+    },
+    "confusion_matrix": [
+      [
+        390,
+        38
+      ],
+      [
+        26,
+        418
+      ]
+    ]
+  },
+  "test_loss": 0.2808411083090196,
+  "training": {
+    "history": {
+      "step": [
+        333,
+        666,
+        999,
+        1332,
+        1665,
+        1998,
+        2331,
+        2664,
+        2997,
+        3330,
+        3663,
+        3996,
+        3998
+      ],
+      "train_loss": [
+        0.4003431816269328,
+        0.24073670598658714,
+        0.20344933685105485,
+        0.18132577173120984,
+        0.179629408954377,
+        0.16174656609996213,
+        0.10863107236734292,
+        0.11424339998949755,
+        0.10382051185729939,
+        0.10378318099520384,
+        0.09971887143832203,
+        0.0975623680740125,
+        0.059602340683341026
+      ],
+      "val_loss": [
+        0.2496940336227417,
+        0.22230948054790498,
+        0.18377681922912598,
+        0.17710115146636962,
+        0.15270815551280975,
+        0.14724293768405913,
+        0.1620760926604271,
+        0.1608133281469345,
+        0.15939488464593887,
+        0.15544931671023368,
+        0.1586981013417244,
+        0.159008096575737,
+        0.1589570389688015
+      ],
+      "epoch": [
+        0.16658329164582292,
+        0.33316658329164583,
+        0.49974987493746875,
+        0.6663331665832917,
+        0.8329164582291145,
+        0.9994997498749375,
+        1.1660830415207604,
+        1.3326663331665833,
+        1.4992496248124063,
+        1.665832916458229,
+        1.832416208104052,
+        1.998999499749875,
+        2.0
+      ]
+    },
+    "train_seconds": 216.0625221470109,
+    "total_steps": 3998,
+    "steps_per_epoch": 1999,
+    "train_peak_gpu_mb": 2308.37744140625,
+    "effective_batch_size": 32
+  },
+  "latency": {
+    "seq_len": 64,
+    "latency_ms_p50": 5.254780502582435,
+    "latency_ms_p95": 5.371577604091726,
+    "latency_ms_mean": 5.269371874965145,
+    "batch_size": 32,
+    "batched_latency_ms_p50": 26.261322003847454,
+    "throughput_samples_per_s": 1218.522052900147,
+    "cpu_latency_ms_p50": 53.27526199107524
+  },
+  "memory": {
+    "weights_mb": 419.90039825439453,
+    "peak_allocated_mb": 572.17724609375,
+    "peak_reserved_mb": 692.0,
+    "inference_peak_mb": 572.17724609375
+  },
+  "environment": {
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "python": "3.11.16",
+    "gpu": "NVIDIA RTX A6000",
+    "gpu_total_mb": 48538.75
+  }
+}
