@@ -5,11 +5,19 @@ Ricardo Amiel Acuña Villogas. \
 Juan Leibniz Aquino Espinoza. \
 Josué Nehemías Velo Poma.
 
-Presentamos una implementación del modelo DistillBERT y comparación con el modelo base BERT.
-Es un enfoque de fine-tuning para resolver la tarea de Text Classification en los datasets:
 
-## Enfoque
+We present the implementation of DistillBERT model and a comparison with base BERT.
+Our approach is to evaluate the effectos of finetunning to deal with Text Classification:
 
+## Introduction
+
+DistilBERT is the student of a knowledge distillation procedure that keeps every second block of BERT and trains against the teacher output distribution, the masked language modelling objective and a cosine alignment on the hidden states. 
+
+The design implies to cut the depth on Bert while width, vocabulary and attention mechanisms are untouched. Therefore our evaluation focus on, how much of the teacher behaviour survived the cut?
+
+## Approach
+
+These are the basic configurations for the employed arquitectures.
 | | BERT base | DistilBERT base |
 |---|---|---|
 | Transformer blocks | 12 | 6 |
@@ -18,13 +26,9 @@ Es un enfoque de fine-tuning para resolver la tarea de Text Classification en lo
 | Pooler | yes | no |
 | Parameters (backbone) | ~ 109M | ~ 66M |
 
-DistilBERT is the student of a knowledge distillation procedure that keeps every second block of BERT and
-trains against the teacher output distribution, the masked language modelling objective and a cosine
-alignment on the hidden states. Depth is the axis that was cut; width, vocabulary and attention are
-untouched. This is what makes the comparison interesting: the question is not whether a smaller model is
-worse, but how much of the teacher behaviour survived the cut.
-
 ## Datasets
+
+These are the details about the used datasets for training and testing.
 
 | Key | Source | Classes | Train used | Test used | Max length |
 |---|---|---|---|---|---|
@@ -78,88 +82,9 @@ report/
   refs.bib              references
 ```
 
+## Approach
 
-
-Métricas de validación:
-- Desempeño
-- Accuracy
-- Precision
-- Recall
-- F1-score
-
-Medimos la eficiencia como: 
-- Número de parámetros vs Accuracy
-- Latencia (tiempo de inferencia)
-- Uso de memoria GPU
-
-Métricas de entrenamiento:
-- Número de iteraciones vs (Training loss & Validation loss)
-
-
-## Experimentos
-
-### Rendimiento, se uso una soloa capa de clasificación para esta comparación.
-
-| Dataset | Model | Accuracy | Precision | Recall | F1 macro |
-|---|---|---|---|---|---|
-| AG News | DistilBERT | 94.63 | 94.66 | 94.63 | 94.63 |
-| AG News | BERT | 94.59 | 94.63 | 94.59 | 94.59 |
-| SST 2 | DistilBERT | 91.06 | 91.08 | 91.04 | 91.05 |
-| SST 2 | BERT | 92.66 | 92.71 | 92.63 | 92.65 |
-| Yelp Polarity | DistilBERT | 96.28 | 96.28 | 96.28 | 96.28 |
-| Yelp Polarity | BERT | 96.61 | 96.61 | 96.61 | 96.61 |
-| Yelp Full | DistilBERT | 64.91 | 64.86 | 64.89 | 64.86 |
-| Yelp Full | BERT | 65.91 | 65.76 | 65.89 | 65.81 |
-
-### Efficiency, averaged over the datasets
-
-| Measurement | BERT | DistilBERT | DistilBERT advantage |
-|---|---|---|---|
-| Parameters (M) | 110.1 | 67.0 | 1.64x |
-| GPU latency, batch 1 (ms) | 4.71 | 2.60 | 1.81x |
-| CPU latency, batch 1 (ms) | 71.2 | 50.5 | 1.41x |
-| Throughput, batch 32 (samples/s) | 612 | 1226 | 2.00x |
-| Peak GPU memory, training (MiB) | 3705 | 2032 | 1.82x |
-| Peak GPU memory, inference (MiB) | 812 | 647 | 1.25x |
-| Training wall clock, all datasets (min) | 34 | 19 | 1.80x |
-
-### Ablation on the classifier, best variant: G: no hidden layer
-
-| Variant | Trainable (M) | SST 2 F1 | AG News F1 |
-|---|---|---|---|
-| A: 1x768 full | 67.0 | 91.05 | 94.63 |
-| B: frozen backbone | 0.6 | 83.37 | 90.04 |
-| C: 3 blocks frozen | 21.9 | 90.93 | 94.17 |
-| D: 1x128 | 66.5 | 91.05 | 94.55 |
-| E: 1x2048 | 67.9 | 90.82 | 94.73 |
-| F: 3x768 | 68.1 | 90.82 | 94.79 |
-| G: no hidden layer | 66.4 | 91.39 | 94.85 |
-
-### The best variant with each backbone
-
-| Dataset | Model | Accuracy | Precision | Recall | F1 macro | Params (M) | GPU ms | Train GiB |
-|---|---|---|---|---|---|---|---|---|
-| SST 2 | DistilBERT | 91.40 | 91.42 | 91.38 | 91.39 | 66.4 | 2.23 | 1.28 |
-| SST 2 | BERT | 91.97 | 92.01 | 91.95 | 91.97 | 109.5 | 5.12 | 2.25 |
-| AG News | DistilBERT | 94.84 | 94.88 | 94.84 | 94.85 | 66.4 | 2.48 | 1.67 |
-| AG News | BERT | 94.72 | 94.77 | 94.72 | 94.73 | 109.5 | 3.23 | 3.01 |
-
-### Representation alignment between the two pretrained encoders
-
-Neighbour agreement over 496 words: **73.1 percent** of the ten nearest neighbours are shared. Linear CKA of the layer averaged space: **0.8977**.
-Topic purity of the ten nearest neighbours: BERT 68.7 percent, DistilBERT 72.2 percent.
-
-| DistilBERT block | BERT block | Linear CKA | Shared neighbours out of 10 |
-|---|---|---|---|
-| embedding output | embedding output | 0.977 | 8.60 |
-| block 1 | block 2 | 0.932 | 7.58 |
-| block 2 | block 4 | 0.900 | 6.74 |
-| block 3 | block 6 | 0.838 | 5.79 |
-| block 4 | block 8 | 0.779 | 5.18 |
-| block 5 | block 10 | 0.705 | 4.53 |
-| block 6 | block 12 | 0.578 | 3.80 |
-
-## The classifier, and why both models get the same one
+### The classifier
 
 Both backbones are wrapped in one module. The final hidden state of the CLS position is taken and passed
 through an MLP with dropout before every linear map. The BERT pooler is deliberately not used, because
@@ -187,10 +112,9 @@ The seven variants are defined in src/config.py:
 The best variant is selected by a rule fixed in advance: highest mean macro F1 across the two ablation
 datasets. That rule is implemented in src/run.py, not applied after looking at the numbers.
 
-## How many epochs, and why
+## Epochs and training hyperparameters
 
-Every run uses 2 epochs. That is not a guess. The BERT paper states its fine tuning recommendation in
-Appendix A.3:
+Every run uses 2 epochs since the BERT paper states its fine tuning recommendation in Appendix A.3:
 
 > we found the following range of possible values to work well across all tasks: Batch size: 16, 32 ;
 > Learning rate (Adam): 5e-5, 3e-5, 2e-5 ; Number of epochs: 2, 3, 4
@@ -200,16 +124,13 @@ appendix adds that "large data sets (e.g., 100k+ labeled training examples) were
 hyperparameter choice than small data sets", and three of our four datasets are at or above that size.
 DistilBERT does not state an epoch count of its own and inherits the BERT recipe.
 
-We then test the choice instead of trusting it. The epoch study trains both backbones on SST 2 and AG News
-to 4 epochs, the top of the recommended range, scores the full validation split at every epoch boundary and
-selects the best epoch by validation macro F1:
+Choosing the best model: The epoch study trains both backbones on SST 2 and AG News to 4 epochs, the top of the recommended range, scores the full validation split at every epoch boundary and selects the best epoch by validation macro F1:
 
 ```bash
 python src/run.py --mode epochs
 ```
 
-The test split is scored at every boundary too, but only for reporting. Model selection uses validation
-alone.
+The test split is scored at every boundary too, but only for reporting. Model selection uses validation alone.
 
 ## How the measurements are taken
 
@@ -283,6 +204,71 @@ When it finishes, bring everything back:
 bash cluster/sync_from_khipu.sh
 python src/figures.py
 ```
+
+## Experiments
+
+### Performace
+
+| Dataset | Model | Accuracy | Precision | Recall | F1 macro |
+|---|---|---|---|---|---|
+| AG News | DistilBERT | 94.63 | 94.66 | 94.63 | 94.63 |
+| AG News | BERT | 94.59 | 94.63 | 94.59 | 94.59 |
+| SST 2 | DistilBERT | 91.06 | 91.08 | 91.04 | 91.05 |
+| SST 2 | BERT | 92.66 | 92.71 | 92.63 | 92.65 |
+| Yelp Polarity | DistilBERT | 96.28 | 96.28 | 96.28 | 96.28 |
+| Yelp Polarity | BERT | 96.61 | 96.61 | 96.61 | 96.61 |
+| Yelp Full | DistilBERT | 64.91 | 64.86 | 64.89 | 64.86 |
+| Yelp Full | BERT | 65.91 | 65.76 | 65.89 | 65.81 |
+
+The same classification head was shared for all cases to provide a fair comparison.
+
+### Efficiency, averaged over the datasets
+
+| Measurement | BERT | DistilBERT | DistilBERT advantage |
+|---|---|---|---|
+| Parameters (M) | 110.1 | 67.0 | 1.64x |
+| GPU latency, batch 1 (ms) | 4.71 | 2.60 | 1.81x |
+| CPU latency, batch 1 (ms) | 71.2 | 50.5 | 1.41x |
+| Throughput, batch 32 (samples/s) | 612 | 1226 | 2.00x |
+| Peak GPU memory, training (MiB) | 3705 | 2032 | 1.82x |
+| Peak GPU memory, inference (MiB) | 812 | 647 | 1.25x |
+| Training wall clock, all datasets (min) | 34 | 19 | 1.80x |
+
+### Ablation on the classifier, best variant: G: no hidden layer
+
+| Variant | Trainable (M) | SST 2 F1 | AG News F1 |
+|---|---|---|---|
+| A: 1x768 full | 67.0 | 91.05 | 94.63 |
+| B: frozen backbone | 0.6 | 83.37 | 90.04 |
+| C: 3 blocks frozen | 21.9 | 90.93 | 94.17 |
+| D: 1x128 | 66.5 | 91.05 | 94.55 |
+| E: 1x2048 | 67.9 | 90.82 | 94.73 |
+| F: 3x768 | 68.1 | 90.82 | 94.79 |
+| G: no hidden layer | 66.4 | 91.39 | 94.85 |
+
+### The best variant with each backbone
+
+| Dataset | Model | Accuracy | Precision | Recall | F1 macro | Params (M) | GPU ms | Train GiB |
+|---|---|---|---|---|---|---|---|---|
+| SST 2 | DistilBERT | 91.40 | 91.42 | 91.38 | 91.39 | 66.4 | 2.23 | 1.28 |
+| SST 2 | BERT | 91.97 | 92.01 | 91.95 | 91.97 | 109.5 | 5.12 | 2.25 |
+| AG News | DistilBERT | 94.84 | 94.88 | 94.84 | 94.85 | 66.4 | 2.48 | 1.67 |
+| AG News | BERT | 94.72 | 94.77 | 94.72 | 94.73 | 109.5 | 3.23 | 3.01 |
+
+### Representation alignment between the two pretrained encoders
+
+Neighbour agreement over 496 words: **73.1 percent** of the ten nearest neighbours are shared. Linear CKA of the layer averaged space: **0.8977**.
+Topic purity of the ten nearest neighbours: BERT 68.7 percent, DistilBERT 72.2 percent.
+
+| DistilBERT block | BERT block | Linear CKA | Shared neighbours out of 10 |
+|---|---|---|---|
+| embedding output | embedding output | 0.977 | 8.60 |
+| block 1 | block 2 | 0.932 | 7.58 |
+| block 2 | block 4 | 0.900 | 6.74 |
+| block 3 | block 6 | 0.838 | 5.79 |
+| block 4 | block 8 | 0.779 | 5.18 |
+| block 5 | block 10 | 0.705 | 4.53 |
+| block 6 | block 12 | 0.578 | 3.80 |
 
 ## The interactive comparison
 
