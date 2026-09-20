@@ -56,6 +56,14 @@ DATASETS = {
     ),
 }
 
+# How each dataset is written wherever a human reads it.
+DATASET_LABELS = {
+    "ag_news": "AG News",
+    "sst2": "SST 2",
+    "yelp_polarity": "Yelp Polarity",
+    "yelp_full": "Yelp Full",
+}
+
 # Datasets used for the headline BERT vs DistilBERT comparison.
 MAIN_DATASETS = ["ag_news", "sst2", "yelp_polarity", "yelp_full"]
 

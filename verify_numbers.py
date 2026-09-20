@@ -68,7 +68,10 @@ exp["wordCka"] = f'{w["cka"]:.3f}'; exp["nWords"] = str(w["n_words"])
 exp["ckaEmbeddings"] = f'{w["layer_profile"][0]["cka"]:.3f}'
 exp["ckaTop"] = f'{w["layer_profile"][-1]["cka"]:.3f}'
 exp["purityBert"] = f'{w["purity"]["bert"]*100:.0f}'; exp["purityDistil"] = f'{w["purity"]["distilbert"]*100:.0f}'
-exp["sentCka"] = f'{json.load(open("web/data/sentences.json"))["meta"]["cka"]:.3f}'
+_sent = json.load(open("web/data/sentences.json"))["datasets"]
+exp["sentCka"] = f'{_sent["ag_news"]["meta"]["cka"]:.3f}'
+exp["sentCkaMax"] = f'{max(v["meta"]["cka"] for v in _sent.values()):.3f}'
+exp["sentCkaMin"] = f'{min(v["meta"]["cka"] for v in _sent.values()):.3f}'
 
 got = dict(re.findall(r"renewcommand\{\\([a-zA-Z]+)\}\{([^}]*)\}",
                       pathlib.Path("artifacts/tables/numbers.tex").read_text()))

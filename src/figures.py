@@ -20,7 +20,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 
-from config import (ABLATIONS, ABLATION_BY_KEY, ABLATION_DATASETS, DATASETS,
+from config import (ABLATIONS, ABLATION_BY_KEY, ABLATION_DATASETS, DATASET_LABELS, DATASETS,
                     EPOCH_DATASETS, EPOCH_STUDY_EPOCHS, FIGURES_DIR, MAIN_DATASETS,
                     RESULTS_DIR)
 
@@ -37,12 +37,7 @@ GRID = "#d9d8d4"
 
 MODEL_COLOR = {"distilbert": C_DISTIL, "bert": C_BERT}
 MODEL_LABEL = {"distilbert": "DistilBERT", "bert": "BERT"}
-DATASET_LABEL = {
-    "ag_news": "AG News",
-    "sst2": "SST 2",
-    "yelp_polarity": "Yelp Polarity",
-    "yelp_full": "Yelp Full",
-}
+DATASET_LABEL = DATASET_LABELS   # defined once in config.py
 # Which ablation axis each variant probes, used only for colour.
 ABLATION_AXIS = {
     "A_baseline": "baseline", "B_frozen_all": "freezing", "C_frozen_half": "freezing",

@@ -26,7 +26,8 @@
     "val_subset": 2000,
     "val_fraction": 0.05,
     "amp": true,
-    "seed": 42
+    "seed": 42,
+    "eval_each_epoch": false
   },
   "dataset_sizes": {
     "train": 63981,
@@ -148,27 +149,29 @@
         2.0
       ]
     },
-    "train_seconds": 216.0625221470109,
+    "per_epoch": [],
+    "best_epoch_by_val_f1": null,
+    "train_seconds": 247.01398156100186,
     "total_steps": 3998,
     "steps_per_epoch": 1999,
-    "train_peak_gpu_mb": 2308.37744140625,
+    "train_peak_gpu_mb": 2307.62744140625,
     "effective_batch_size": 32
   },
   "latency": {
     "seq_len": 64,
-    "latency_ms_p50": 5.254780502582435,
-    "latency_ms_p95": 5.371577604091726,
-    "latency_ms_mean": 5.269371874965145,
+    "latency_ms_p50": 2.6550085021881387,
+    "latency_ms_p95": 5.135686957510188,
+    "latency_ms_mean": 3.4464881954772864,
     "batch_size": 32,
-    "batched_latency_ms_p50": 26.261322003847454,
-    "throughput_samples_per_s": 1218.522052900147,
-    "cpu_latency_ms_p50": 53.27526199107524
+    "batched_latency_ms_p50": 25.44617949752137,
+    "throughput_samples_per_s": 1257.556168819646,
+    "cpu_latency_ms_p50": 52.927871511201374
   },
   "memory": {
     "weights_mb": 419.90039825439453,
-    "peak_allocated_mb": 572.17724609375,
-    "peak_reserved_mb": 692.0,
-    "inference_peak_mb": 572.17724609375
+    "peak_allocated_mb": 571.42724609375,
+    "peak_reserved_mb": 688.0,
+    "inference_peak_mb": 571.42724609375
   },
   "environment": {
     "torch": "2.11.0+cu128",
@@ -176,5 +179,6 @@
     "python": "3.11.16",
     "gpu": "NVIDIA RTX A6000",
     "gpu_total_mb": 48538.75
-  }
+  },
+  "encoder_dir": "artifacts/encoders/bert__sst2__A_baseline"
 }

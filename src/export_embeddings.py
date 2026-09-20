@@ -25,7 +25,8 @@ from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 from transformers import AutoModel, AutoTokenizer
 
-from config import DATASETS, MAIN_DATASETS, MODELS, RESULTS_DIR, WEB_DATA_DIR
+from config import (DATASET_LABELS, DATASETS, MAIN_DATASETS, MODELS, RESULTS_DIR,
+                    WEB_DATA_DIR)
 from wordlist import flat_words
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -306,7 +307,7 @@ def export_sentences(out_dir: str, n: int = 1000, max_chars: int = 190) -> dict:
     if not out:
         return {}
     payload = {"order": [k for k in MAIN_DATASETS if k in out],
-               "names": {k: k.replace("_", " ").title() for k in out},
+               "names": {k: DATASET_LABELS.get(k, k) for k in out},
                "datasets": out}
     with open(os.path.join(out_dir, "sentences.json"), "w") as fh:
         json.dump(payload, fh)
