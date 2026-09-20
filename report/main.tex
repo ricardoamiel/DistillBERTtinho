@@ -40,17 +40,7 @@
 \maketitle
 
 \begin{abstract}
-Knowledge distillation promises a smaller encoder that behaves like its teacher, but the size of the
-concession is rarely measured under one controlled protocol. We fine tune DistilBERT and BERT base under an
-identical classifier, optimiser and data budget on \nDatasets{} text classification datasets: AG News,
-SST 2, Yelp Polarity and Yelp Review Full. DistilBERT holds \paramReduction{} percent fewer parameters and
-reaches \accRetention{} percent of the accuracy of BERT, a mean gap of \meanAccGap{} points ranging from
-\minAccGap{} to \maxAccGap{} across datasets, in exchange for \throughputSpeedup{} times the inference
-throughput and \memReduction{} percent less peak GPU memory in training. A seven way ablation over the
-classifier shows its shape is almost irrelevant: width and depth move F1 macro by at most \headSpread{}
-points, while freezing the transformer costs \frozenGap{}. Over \nWords{} words, \wordOverlapPct{} percent
-of nearest neighbours are shared between the two pretrained encoders, at a linear CKA of \wordCka{}. What
-distillation gave up is capacity, not the organisation of the space.
+We present an evaluation of using knowledge distillation to train a smaller encoder DistilBERT from a base BERT as the teacher. We fine tune DistilBERT and BERT base under an identical classifier, optimiser and data budget on \nDatasets{} text classification datasets: AG News, SST 2, Yelp Polarity and Yelp Review Full. DistilBERT holds \paramReduction{} percent fewer parameters and reaches \accRetention{} percent of the accuracy of BERT, a mean gap of \meanAccGap{} points ranging from \minAccGap{} to \maxAccGap{} across datasets, in exchange for \throughputSpeedup{} times the inference throughput and \memReduction{} percent less peak GPU memory in training. A seven way ablation over the classifier shows its shape is almost irrelevant: width and depth move F1 macro by at most \headSpread{} points, while freezing the transformer costs \frozenGap{}. Over \nWords{} words, \wordOverlapPct{} percent of nearest neighbours are shared between the two pretrained encoders, at a linear CKA of \wordCka{}. What distillation gave up is capacity, not the organisation of the space.
 \end{abstract}
 
 \section{Introduction}
