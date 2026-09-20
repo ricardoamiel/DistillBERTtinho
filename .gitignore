@@ -51,3 +51,6 @@ report/*.toc
 .DS_Store
 Thumbs.db
 *.swp
+
+# Short paper
+report/

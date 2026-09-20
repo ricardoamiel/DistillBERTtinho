@@ -902,8 +902,11 @@ def summary_markdown(results: dict) -> str:
             out += ["", "| DistilBERT block | BERT block | Linear CKA | Shared neighbours out of 10 |",
                     "|---|---|---|---|"]
             for row in w["layer_profile"]:
-                out.append(f"| {row['distil_layer']} | {row['bert_layer']} | {row['cka']:.3f} | "
-                           f"{row['overlap']:.2f} |")
+                depth = ("embedding output" if row["distil_layer"] == 0
+                         else f"block {row['distil_layer']}")
+                teacher = ("embedding output" if row["bert_layer"] == 0
+                           else f"block {row['bert_layer']}")
+                out.append(f"| {depth} | {teacher} | {row['cka']:.3f} | {row['overlap']:.2f} |")
     return "\n".join(out) + "\n"
 
 
