@@ -1,7 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=nlp-p1-ep
-#SBATCH --partition=data-science
-#SBATCH --nodelist=ds001
+#SBATCH --partition=lenovo
 #SBATCH --gres=gpu:rtxa6000:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G

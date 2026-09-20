@@ -1,0 +1,209 @@
+{
+  "run_id": "distilbert__ag_news__D_narrow",
+  "model": "distilbert",
+  "checkpoint": "distilbert-base-uncased",
+  "dataset": "ag_news",
+  "head": {
+    "key": "D_narrow",
+    "label": "Narrow head 1x128, full fine tuning",
+    "hidden_sizes": [
+      128
+    ],
+    "frozen_layers": 0,
+    "dropout": 0.1,
+    "note": "Fewer neurons per classifier layer."
+  },
+  "train_config": {
+    "epochs": 2,
+    "batch_size": 32,
+    "eval_batch_size": 64,
+    "lr_backbone": 2e-05,
+    "lr_head": 0.0001,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.06,
+    "max_grad_norm": 1.0,
+    "eval_points": 12,
+    "val_subset": 2000,
+    "val_fraction": 0.05,
+    "amp": true,
+    "seed": 42,
+    "eval_each_epoch": false
+  },
+  "dataset_sizes": {
+    "train": 114000,
+    "val": 6000,
+    "test": 7600
+  },
+  "num_labels": 4,
+  "label_names": [
+    "World",
+    "Sports",
+    "Business",
+    "Sci/Tech"
+  ],
+  "max_length": 128,
+  "params": {
+    "total_params": 66461828,
+    "trainable_params": 66461828,
+    "frozen_params": 0,
+    "head_params": 98948,
+    "backbone_params": 66362880,
+    "num_transformer_blocks": 6
+  },
+  "metrics": {
+    "accuracy": 0.9455263157894737,
+    "precision_macro": 0.9459844043727006,
+    "recall_macro": 0.9455263157894737,
+    "f1_macro": 0.9455483015093472,
+    "precision_weighted": 0.9459844043727006,
+    "recall_weighted": 0.9455263157894737,
+    "f1_weighted": 0.9455483015093473,
+    "per_class": {
+      "precision": [
+        0.9647247461250668,
+        0.9879201680672269,
+        0.9307901907356948,
+        0.9005025125628141
+      ],
+      "recall": [
+        0.95,
+        0.99,
+        0.8989473684210526,
+        0.9431578947368421
+      ],
+      "f1": [
+        0.9573057544417927,
+        0.9889589905362776,
+        0.9145917001338688,
+        0.9213367609254499
+      ],
+      "support": [
+        1900,
+        1900,
+        1900,
+        1900
+      ]
+    },
+    "confusion_matrix": [
+      [
+        1805,
+        9,
+        47,
+        39
+      ],
+      [
+        9,
+        1881,
+        6,
+        4
+      ],
+      [
+        31,
+        6,
+        1708,
+        155
+      ],
+      [
+        26,
+        8,
+        74,
+        1792
+      ]
+    ]
+  },
+  "test_loss": 0.1725336021028067,
+  "training": {
+    "history": {
+      "step": [
+        593,
+        1186,
+        1779,
+        2372,
+        2965,
+        3558,
+        4151,
+        4744,
+        5337,
+        5930,
+        6523,
+        7116,
+        7124
+      ],
+      "train_loss": [
+        0.5271806905068093,
+        0.24341193558632523,
+        0.21988788417981808,
+        0.2009972233551399,
+        0.1886089332715858,
+        0.19017774151232955,
+        0.14680030745490255,
+        0.14433402595350528,
+        0.1344080377655955,
+        0.13340773626464666,
+        0.13182753228863567,
+        0.12817766406521527,
+        0.11176028568297625
+      ],
+      "val_loss": [
+        0.3048341493606567,
+        0.23201919680833816,
+        0.22085888442397117,
+        0.21294220042228698,
+        0.21292627641558648,
+        0.1981583097577095,
+        0.20662444226443769,
+        0.20616039434820413,
+        0.20934993854165077,
+        0.20235790106654167,
+        0.19690865589678289,
+        0.19725370176136495,
+        0.1973062459230423
+      ],
+      "epoch": [
+        0.1664795058955643,
+        0.3329590117911286,
+        0.4994385176866929,
+        0.6659180235822572,
+        0.8323975294778214,
+        0.9988770353733858,
+        1.16535654126895,
+        1.3318360471645143,
+        1.4983155530600787,
+        1.6647950589556428,
+        1.8312745648512072,
+        1.9977540707467716,
+        2.0
+      ]
+    },
+    "per_epoch": [],
+    "best_epoch_by_val_f1": null,
+    "train_seconds": 281.08617990100174,
+    "total_steps": 7124,
+    "steps_per_epoch": 3562,
+    "train_peak_gpu_mb": 1707.26513671875,
+    "effective_batch_size": 32
+  },
+  "latency": {
+    "seq_len": 128,
+    "latency_ms_p50": 2.522492504795082,
+    "latency_ms_p95": 2.5999882607720792,
+    "latency_ms_mean": 2.5339899960818,
+    "batch_size": 32,
+    "batched_latency_ms_p50": 26.228240501950495,
+    "throughput_samples_per_s": 1220.0589665029295,
+    "cpu_latency_ms_p50": 36.38874949683668
+  },
+  "memory": {
+    "weights_mb": 253.53175354003906,
+    "peak_allocated_mb": 539.49267578125,
+    "peak_reserved_mb": 656.0,
+    "inference_peak_mb": 539.49267578125
+  },
+  "environment": {
+    "torch": "2.11.0+cu128",
+    "cuda": "12.8",
+    "python": "3.11.16",
+    "gpu": "NVIDIA RTX A6000",
+    "gpu_total_mb": 48538.75
+  }
+}

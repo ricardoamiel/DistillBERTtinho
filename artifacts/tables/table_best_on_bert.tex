@@ -1,5 +1,17 @@
-\begin{table}[t]\centering\footnotesize
-\caption{Pending. The runs behind this table have not finished; src/figures.py writes it as soon as they do.}
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{The selected classifier variant with each backbone, all metrics.}
 \label{tab:best}
-\begin{tabular}{l}\toprule pending \\ \bottomrule\end{tabular}
+\begin{tabular}{llrrrrrrr}
+\toprule
+Dataset & Model & Accuracy & Precision & Recall & F1 & Params (M) & GPU ms & Train GiB \\
+\midrule
+SST 2 & DistilBERT & 91.40 & 91.42 & 91.38 & 91.39 & 66.4 & 2.23 & 1.28 \\
+SST 2 & BERT & 91.97 & 92.01 & 91.95 & 91.97 & 109.5 & 5.12 & 2.25 \\
+\addlinespace
+AG News & DistilBERT & 94.84 & 94.88 & 94.84 & 94.85 & 66.4 & 2.48 & 1.67 \\
+AG News & BERT & 94.72 & 94.77 & 94.72 & 94.73 & 109.5 & 3.23 & 3.01 \\
+\bottomrule
+\end{tabular}
 \end{table}

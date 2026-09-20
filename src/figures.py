@@ -141,51 +141,84 @@ def best_head(results: dict, datasets: list[str] | None = None) -> str | None:
 # --------------------------------------------------------------------------
 
 def fig_params_accuracy_bubble(results: dict) -> None:
-    """Required bubble chart: parameters against accuracy, size is latency."""
+    """Required bubble chart: parameters against accuracy, bubble area is latency.
+
+    Accuracies span roughly 65 to 97 percent, so a single linear axis squashes the
+    three easy datasets into one another. The y axis is therefore broken, with the
+    same scale in both segments.
+    """
     datasets = available_main(results)
     if not datasets:
         return
-    fig, ax = plt.subplots(figsize=(5.4, 2.05))
 
-    lat = [get(results, m, d)["latency"]["latency_ms_p50"]
-           for d in datasets for m in ("distilbert", "bert")]
+    points = {}
+    for d in datasets:
+        points[d] = [(get(results, m, d)["params"]["total_params"] / 1e6,
+                      get(results, m, d)["metrics"]["accuracy"] * 100,
+                      get(results, m, d)["latency"]["latency_ms_p50"])
+                     for m in ("distilbert", "bert")]
+    accs = [p[1] for pair in points.values() for p in pair]
+    lat = [p[2] for pair in points.values() for p in pair]
     lo, hi = min(lat), max(lat)
 
     def area(ms):
-        return 120 + 900 * (ms - lo) / max(hi - lo, 1e-9)
+        return 90 + 520 * (ms - lo) / max(hi - lo, 1e-9)
 
-    for d in datasets:
-        pts = []
-        for m in ("distilbert", "bert"):
-            r = get(results, m, d)
-            pts.append((r["params"]["total_params"] / 1e6,
-                        r["metrics"]["accuracy"] * 100,
-                        r["latency"]["latency_ms_p50"]))
-        ax.plot([pts[0][0], pts[1][0]], [pts[0][1], pts[1][1]],
+    # Split the datasets into a high band and a low band if there is a real gap.
+    ordered = sorted(accs)
+    gaps = [(ordered[i + 1] - ordered[i], i) for i in range(len(ordered) - 1)]
+    widest, at = max(gaps) if gaps else (0, 0)
+    split = widest > 8
+
+    if split:
+        cut = (ordered[at] + ordered[at + 1]) / 2
+        fig, (top, bot) = plt.subplots(
+            2, 1, sharex=True, figsize=(5.4, 2.3),
+            gridspec_kw={"height_ratios": [3, 1], "hspace": 0.12})
+        axes = [top, bot]
+        top.set_ylim(min(a for a in accs if a > cut) - 1.2, max(accs) + 1.2)
+        bot.set_ylim(min(accs) - 1.2, max(a for a in accs if a < cut) + 1.2)
+        top.spines["bottom"].set_visible(False)
+        bot.spines["top"].set_visible(False)
+        top.tick_params(labelbottom=False, bottom=False)
+        # the diagonal marks that say the axis is broken
+        kw = dict(marker=[(-1, -0.5), (1, 0.5)], markersize=5, linestyle="none",
+                  color=INK_SOFT, mec=INK_SOFT, mew=1, clip_on=False)
+        top.plot([0, 1], [0, 0], transform=top.transAxes, **kw)
+        bot.plot([0, 1], [1, 1], transform=bot.transAxes, **kw)
+    else:
+        fig, ax = plt.subplots(figsize=(5.4, 2.35))
+        axes = [ax]
+        cut = -1
+
+    for d, pair in points.items():
+        ax = axes[0] if (not split or pair[0][1] > cut) else axes[1]
+        ax.plot([pair[0][0], pair[1][0]], [pair[0][1], pair[1][1]],
                 color=GRID, lw=1.0, zorder=1)
-        for (x, y, ms), m in zip(pts, ("distilbert", "bert")):
-            ax.scatter(x, y, s=area(ms), color=MODEL_COLOR[m], alpha=0.75,
+        for (x, y, ms), m in zip(pair, ("distilbert", "bert")):
+            ax.scatter(x, y, s=area(ms), color=MODEL_COLOR[m], alpha=0.78,
                        edgecolor="white", linewidth=1.2, zorder=3)
-        mid_y = (pts[0][1] + pts[1][1]) / 2
-        ax.annotate(DATASET_LABEL[d], (pts[1][0], mid_y),
-                    xytext=(13, 0), textcoords="offset points",
-                    va="center", fontsize=7.5, color=INK)
-        ax.annotate(f"{pts[0][1]:.1f}", (pts[0][0], pts[0][1]), xytext=(-24, -2.5),
+        ax.annotate(f"{pair[0][1]:.1f}", (pair[0][0], pair[0][1]), xytext=(-25, -2.5),
                     textcoords="offset points", fontsize=6.5, color=INK_SOFT)
-        ax.annotate(f"{pts[1][1]:.1f}", (pts[1][0], pts[1][1]), xytext=(8, -9),
+        ax.annotate(f"{pair[1][1]:.1f}", (pair[1][0], pair[1][1]), xytext=(10, -8),
                     textcoords="offset points", fontsize=6.5, color=INK_SOFT)
+        ax.annotate(DATASET_LABEL[d], (pair[1][0], pair[1][1]), xytext=(16, 3),
+                    textcoords="offset points", va="center", fontsize=7.5, color=INK)
 
-    ax.set_xlabel("Total parameters (millions)")
-    ax.set_ylabel("Test accuracy (%)")
-    ax.set_xlim(55, 150)
+    for ax in axes:
+        ax.set_xlim(52, 162)
+        tidy(ax)
+    axes[-1].set_xlabel("Total parameters (millions)")
+    fig.supylabel("Test accuracy (%)", fontsize=8, x=0.015)
     handles = [plt.Line2D([], [], marker="o", ls="", markersize=7,
                           color=MODEL_COLOR[m], label=MODEL_LABEL[m])
                for m in ("distilbert", "bert")]
-    handles.append(plt.Line2D([], [], marker="o", ls="", markersize=4,
-                              color=INK_SOFT, alpha=0.5,
-                              label=f"bubble area: GPU latency {lo:.1f} to {hi:.1f} ms"))
-    ax.legend(handles=handles, loc="lower right")
-    tidy(ax)
+    fig.legend(handles=handles, ncols=2, loc="lower center",
+               bbox_to_anchor=(0.5, -0.17), fontsize=7.5)
+    if split:
+        fig.subplots_adjust(left=0.11, right=0.99, top=0.97, bottom=0.17)
+    else:
+        fig.tight_layout()
     save(fig, "fig1_params_vs_accuracy_bubble")
 
 
@@ -748,9 +781,20 @@ def write_numbers(results: dict) -> None:
             m("frozenVariantFone", f1s["B_frozen_all"])
             m("frozenGap", f1s["A_baseline"] - f1s["B_frozen_all"])
             m("halfFrozenGap", f1s["A_baseline"] - f1s["C_frozen_half"])
-            spread = max(f1s[k] for k in ("D_narrow", "E_wide", "F_deep", "G_linear", "A_baseline")) - \
-                     min(f1s[k] for k in ("D_narrow", "E_wide", "F_deep", "G_linear", "A_baseline"))
-            m("headSpread", spread)
+            shapes = ("D_narrow", "E_wide", "F_deep", "G_linear", "A_baseline")
+            m("headSpread", max(f1s[k] for k in shapes) - min(f1s[k] for k in shapes))
+            # What freezing the lower half actually buys, which is the practical finding.
+            base = get(results, "distilbert", abl_ds[0], "A_baseline")
+            half = get(results, "distilbert", abl_ds[0], "C_frozen_half")
+            if base and half:
+                m("halfFrozenTrainable", half["params"]["trainable_params"] / 1e6, "{:.1f}")
+                m("halfFrozenTrainableCut",
+                  100 * (1 - half["params"]["trainable_params"] / base["params"]["trainable_params"]),
+                  "{:.0f}")
+                cut = np.mean([get(results, "distilbert", d, "A_baseline")["training"]["train_seconds"]
+                               / get(results, "distilbert", d, "C_frozen_half")["training"]["train_seconds"]
+                               for d in abl_ds])
+                m("halfFrozenSpeedup", float(cut), "{:.1f}")
         for d in abl_ds:
             rb = get(results, "bert", d, key)
             rd = get(results, "distilbert", d, key)

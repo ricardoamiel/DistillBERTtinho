@@ -1,5 +1,19 @@
-\begin{table}[t]\centering\footnotesize
-\caption{Pending. The runs behind this table have not finished; src/figures.py writes it as soon as they do.}
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Classifier ablation on DistilBERT. Train (M) is the number of trainable parameters in millions.}
 \label{tab:ablation}
-\begin{tabular}{l}\toprule pending \\ \bottomrule\end{tabular}
+\begin{tabular}{lrrrrr}
+\toprule
+Variant & Train (M) & SST 2 Acc & SST 2 F1 & AG News Acc & AG News F1 \\
+\midrule
+A: 1x768 full & 67.0 & 91.06 & 91.05 & 94.63 & 94.63 \\
+B: frozen backbone & 0.6 & 83.37 & 83.37 & 90.07 & 90.04 \\
+C: 3 blocks frozen & 21.9 & 90.94 & 90.93 & 94.17 & 94.17 \\
+D: 1x128 & 66.5 & 91.06 & 91.05 & 94.55 & 94.55 \\
+E: 1x2048 & 67.9 & 90.83 & 90.82 & 94.72 & 94.73 \\
+F: 3x768 & 68.1 & 90.83 & 90.82 & 94.79 & 94.79 \\
+G: no hidden layer & 66.4 & 91.40 & 91.39 & 94.84 & 94.85 \\
+\bottomrule
+\end{tabular}
 \end{table}

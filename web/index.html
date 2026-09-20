@@ -26,6 +26,8 @@
   --shadow: 0 1px 2px rgba(16, 21, 29, .06), 0 8px 24px rgba(16, 21, 29, .05);
 }
 * { box-sizing: border-box; }
+/* A class that sets display would otherwise beat the user agent rule for [hidden]. */
+[hidden] { display: none !important; }
 body {
   margin: 0;
   background: var(--bg);
@@ -244,7 +246,12 @@ async function boot() {
   }
   renderStats(); renderVerdict(); renderGroupChips(); renderRuns(); renderDepth(); renderMethod();
   wireControls();
-  select(words.words.find(w => w.word === "guitar") || words.words[0]);
+
+  // Deep links: ?word=guitar and ?view=sentences, so a finding can be shared as a URL.
+  const params = new URLSearchParams(location.search);
+  const wanted = (params.get("word") || "guitar").toLowerCase();
+  select(words.words.find(w => w.word === wanted) || words.words[0]);
+  if (params.get("view") === "sentences" && state.sents) setMode("sentences");
 }
 
 /* ---------- headline numbers ---------- */
@@ -295,8 +302,21 @@ function renderStats() {
 }
 
 function renderVerdict() {
+  const el = document.getElementById("verdict");
+  if (state.mode === "sentences" && state.sents) {
+    const sm = state.sents.meta;
+    const prof = state.words.meta.layer_profile;
+    const top = prof && prof.length ? prof[prof.length - 1].cka : null;
+    el.innerHTML =
+      `<span class="big" style="color: var(--shared)">${sm.cka.toFixed(3)}</span>
+       <span class="t">linear CKA between the two encoders after fine tuning, over ${sm.n} AG News test
+       sentences. Before fine tuning the same top layer comparison sits at
+       ${top !== null ? top.toFixed(3) : "a much lower value"}, so training on a shared task pulls the two
+       representations back together. Both models sort the four topics into the same four regions.</span>`;
+    return;
+  }
   const m = state.words.meta;
-  document.getElementById("verdict").innerHTML =
+  el.innerHTML =
     `<span class="big" style="color: var(--shared)">${m.overlap_pct}%</span>
      <span class="t">of the ten closest words that BERT picks for a given word are also picked by DistilBERT,
      measured in the full 768 dimensional space over ${m.n_words} words. Linear CKA between the two
@@ -468,19 +488,20 @@ function wireControls() {
   q.addEventListener("blur", () => setTimeout(closeSuggest, 120));
 
   const mw = document.getElementById("mode-words"), ms = document.getElementById("mode-sent");
-  function setMode(mode) {
-    state.mode = mode;
-    mw.setAttribute("aria-pressed", mode === "words");
-    ms.setAttribute("aria-pressed", mode === "sentences");
-    document.getElementById("searchwrap").hidden = mode !== "words";
-    document.getElementById("nbwrap").hidden = mode !== "words";
-    document.getElementById("groupchips").hidden = mode !== "words";
-    draw();
-  }
   mw.addEventListener("click", () => setMode("words"));
   ms.addEventListener("click", () => { if (state.sents) setMode("sentences"); });
   if (!state.sents) ms.disabled = true;
+}
 
+function setMode(mode) {
+  state.mode = mode;
+  document.getElementById("mode-words").setAttribute("aria-pressed", mode === "words");
+  document.getElementById("mode-sent").setAttribute("aria-pressed", mode === "sentences");
+  document.getElementById("searchwrap").hidden = mode !== "words";
+  document.getElementById("nbwrap").hidden = mode !== "words";
+  document.getElementById("groupchips").hidden = mode !== "words";
+  renderVerdict();
+  draw();
 }
 
 function renderGroupChips() {

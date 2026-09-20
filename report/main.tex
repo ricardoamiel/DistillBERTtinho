@@ -48,6 +48,9 @@
 \providecommand{\gpuLatencyDistil}{\textbf{[pending]}}
 \providecommand{\gpuSpeedup}{\textbf{[pending]}}
 \providecommand{\halfFrozenGap}{\textbf{[pending]}}
+\providecommand{\halfFrozenTrainable}{\textbf{[pending]}}
+\providecommand{\halfFrozenTrainableCut}{\textbf{[pending]}}
+\providecommand{\halfFrozenSpeedup}{\textbf{[pending]}}
 \providecommand{\headSpread}{\textbf{[pending]}}
 \providecommand{\maxAccGap}{\textbf{[pending]}}
 \providecommand{\maxGapDataset}{\textbf{[pending]}}
@@ -69,6 +72,7 @@
 \providecommand{\trainMinutesBert}{\textbf{[pending]}}
 \providecommand{\trainMinutesDistil}{\textbf{[pending]}}
 \providecommand{\wordCka}{\textbf{[pending]}}
+\providecommand{\sentCka}{\textbf{[pending]}}
 \providecommand{\wordOverlap}{\textbf{[pending]}}
 \providecommand{\wordOverlapPct}{\textbf{[pending]}}
 \input{../artifacts/tables/numbers.tex}
@@ -161,8 +165,9 @@ NVIDIA RTX A6000 and the same seed, so latency and memory are comparable across 
 \begin{figure}[!tb]
   \centering
   \includegraphics[width=\linewidth]{fig1_params_vs_accuracy_bubble.pdf}
-  \caption{Parameters against accuracy. Each line joins the two backbones on one dataset; bubble area is
-  single example GPU latency. The lines are close to flat, which is this study in one picture.}
+  \caption{Parameters against accuracy. Each line joins the two backbones on one dataset and bubble area is
+  single example GPU latency, from \gpuLatencyDistil{} to \gpuLatencyBert{} ms. The lines are close to flat,
+  which is this study in one picture.}
   \label{fig:bubble}
 \end{figure}
 
@@ -185,18 +190,15 @@ finer grained label set.
 \end{figure}
 
 \paragraph{How many epochs are needed.}
-Two epochs is a choice, so we test it. Table \ref{tab:epochs} trains both backbones on SST 2 and AG News
-to four epochs, the top of the published range, scoring the full validation split at every epoch boundary
-and selecting by validation F1 macro. The best epoch is \epochBestMin{} or \epochBestMax{} in every one of
-the \epochStudyRuns{} runs, and the most that any run gains over epoch two is \epochGainOverTwo{} F1 macro
-points. Two epochs is therefore not a budget compromise, it is where these datasets saturate.
-
-\input{../artifacts/tables/table_epochs.tex}
+Two epochs is a choice, so we test it: both backbones are trained on SST 2 and AG News to four epochs, the
+top of the published range, scoring the full validation split at every boundary. The best epoch is
+\epochBestMin{} or \epochBestMax{} in all \epochStudyRuns{} runs and the most any run gains over epoch two
+is \epochGainOverTwo{} points, so two epochs is where these datasets saturate.
 
 \paragraph{Training dynamics.}
-Figure \ref{fig:loss} matters beyond bookkeeping. If DistilBERT were merely underfitting, its training loss
-would sit high and still be falling at the end of the schedule. It does not: both models flatten together,
-so the distance between the two validation curves is a capacity gap, not an optimisation gap.
+Figure \ref{fig:loss} matters beyond bookkeeping: if DistilBERT were merely underfitting, its training loss
+would sit high and still be falling at the end. It does not, both models flatten together, so the distance
+between the validation curves is a capacity gap and not an optimisation gap.
 
 \paragraph{Efficiency.}
 Table \ref{tab:eff} gives the cost side, and the shape of the saving is worth reading carefully. Halving
@@ -230,12 +232,14 @@ has nothing left to extract.
 
 \input{../artifacts/tables/table_ablation.tex}
 
-\paragraph{Freezing is the axis that matters.}
-Freezing the whole transformer costs \frozenGap{} F1 macro points against the baseline, an order of
-magnitude more than any head shape change. Freezing only the lower three blocks costs \halfFrozenGap{}
-points, which locates the task specific adaptation in the upper half of the encoder. The practical reading
-is to spend compute on making the transformer trainable rather than on the classifier. The selected variant
-is \bestVariant{} at \bestVariantFone{} mean F1 macro.
+\paragraph{Freezing is the axis that matters, and only in its upper half.}
+Freezing the whole transformer costs \frozenGap{} F1 macro points against the baseline, more than an order
+of magnitude beyond any head shape change. Freezing only the lower three blocks costs \halfFrozenGap{}
+points, inside the band that separates the head shapes from one another, while cutting trainable parameters
+to \halfFrozenTrainable{}M, \halfFrozenTrainableCut{} percent fewer, and training \halfFrozenSpeedup{}
+times faster. Task adaptation therefore lives almost entirely in the upper half of the encoder: the lower
+half can be left exactly as pretraining produced it. The selected variant is \bestVariant{} at
+\bestVariantFone{} mean F1 macro, which is the simplest head in the grid.
 
 \paragraph{The winning variant on BERT.}
 Table \ref{tab:best} rebuilds that variant on BERT base. The ordering is unchanged and the gap stays in the
@@ -250,25 +254,25 @@ The accuracy gap says how often the models agree on a label, not whether they ag
 underneath. We embed \nWords{} words spanning 20 topics with each pretrained encoder and compare the two
 768 dimensional spaces with linear centred kernel alignment \citep{kornblith2019similarity}, matching
 student block $d$ to teacher block $2d$, the layer it was initialised from. Alignment is near perfect at
-the embeddings (\ckaEmbeddings{}), still high at mid depth (\ckaMid{} for student block
-\ckaMidDistilLayer{} against teacher block \ckaMidBertLayer{}) and falls to \ckaTop{} at the top, so
-distillation preserved the lower and middle geometry and let the task specialised upper layers drift.
-Reading words from the layer averaged, mean centred space, \wordOverlap{} of the ten nearest neighbours
-BERT assigns to a word are also chosen by DistilBERT, and \purityDistil{} percent of DistilBERT neighbours
-share the topic of their query word against \purityBert{} percent for BERT, so the smaller model is
-marginally tidier here. An interactive version ships with the code.
+the embeddings (\ckaEmbeddings{}), still high at mid depth (\ckaMid{}) and falls to \ckaTop{} at the top,
+so distillation preserved the lower and middle geometry and let the specialised upper layers drift. In the
+layer averaged, mean centred space, \wordOverlap{} of the ten nearest neighbours BERT assigns to a word are
+also chosen by DistilBERT, and \purityDistil{} percent of DistilBERT neighbours share their query word
+topic against \purityBert{} percent for BERT, so the smaller model is marginally tidier here. Fine tuning
+then realigns the tops: over AG News test sentences the two fine tuned encoders reach CKA \sentCka{}. An
+interactive version ships with the code.
 
 \section{Conclusion}
 
-DistilBERT keeps \accRetention{} percent of the accuracy of BERT base on four datasets while holding
-\paramReduction{} percent fewer parameters, reaching \throughputSpeedup{} times the inference throughput
-and training in \memReduction{} percent less GPU memory, and two epochs is enough for both. The classifier is not a
-useful place to spend that budget: head width and depth move F1 macro by at most \headSpread{} points
-across seven variants, while freezing the transformer costs \frozenGap{}. Alignment between the two
-encoders is near perfect at the embeddings and decays with depth, so what distillation gave up is capacity
-in the upper layers, not the organisation of the space. Under a latency or memory budget DistilBERT is the
-right default here, and the budget is better spent unfreezing the encoder than enlarging the classifier.
-One caveat: Yelp was subsampled and each run used one seed, so differences under half a point are noise.
+DistilBERT keeps \accRetention{} percent of the accuracy of BERT base across four datasets while holding
+\paramReduction{} percent fewer parameters, reaching \throughputSpeedup{} times its throughput and training
+in \memReduction{} percent less GPU memory, and two epochs is enough for both. Capacity does not belong in
+the classifier: head width and depth move F1 macro by at most \headSpread{} points and the winner has no
+hidden layer at all. It belongs in the upper encoder and only there, since freezing all six blocks costs
+\frozenGap{} points while freezing the lower three costs \halfFrozenGap{} and trains \halfFrozenSpeedup{}
+times faster. The layerwise alignment agrees, near perfect at the embeddings and \ckaTop{} at the top: what
+distillation gave up is capacity in the upper layers, not the organisation of the space. Each run used a
+single seed, so differences under half a point are noise.
 
 \bibliographystyle{plainnat}
 \bibliography{refs}

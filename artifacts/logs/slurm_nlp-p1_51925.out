@@ -182,4 +182,355 @@ Using the latest cached version of the dataset since Yelp/yelp_review_full could
 Found the latest cached dataset configuration 'yelp_review_full' at /home/ricardo.acuna/.cache/huggingface/datasets/Yelp___yelp_review_full/yelp_review_full/0.0.0/c1f9ee939b7d05667af864ee1cb066393154bf85 (last modified on Sat Sep 19 22:13:21 2026).
 Using the latest cached version of the dataset since Yelp/yelp_review_full couldn't be found on the Hugging Face Hub (offline mode is enabled).
 Found the latest cached dataset configuration 'yelp_review_full' at /home/ricardo.acuna/.cache/huggingface/datasets/Yelp___yelp_review_full/yelp_review_full/0.0.0/c1f9ee939b7d05667af864ee1cb066393154bf85 (last modified on Sat Sep 19 22:13:21 2026).
-tokenising yelp_full/train:   0%|          | 0/95000 [00:00<?, ? examples/s]tokenising yelp_full/train:   1%|          | 1000/95000 [00:00<00:34, 2707.20 examples/s]tokenising yelp_full/train:   2%|▏         | 2000/95000 [00:00<00:41, 2244.32 examples/s]tokenising yelp_full/train:   3%|▎         | 3000/95000 [00:01<00:34, 2645.28 examples/s]tokenising yelp_full/train:   4%|▍         | 4000/95000 [00:01<00:32, 2804.62 examples/s]tokenising yelp_full/train:   5%|▌         | 5000/95000 [00:01<00:30, 2961.83 examples/s]tokenising yelp_full/train:   6%|▋         | 6000/95000 [00:02<00:28, 3090.75 examples/s]tokenising yelp_full/train:   7%|▋         | 7000/95000 [00:02<00:27, 3163.38 examples/s]tokenising yelp_full/train:   8%|▊         | 8000/95000 [00:02<00:26, 3225.24 examples/s]tokenising yelp_full/train:   9%|▉         | 9000/95000 [00:02<00:26, 3301.17 examples/s]tokenising yelp_full/train:  11%|█         | 10000/95000 [00:03<00:25, 3296.20 examples/s]tokenising yelp_full/train:  12%|█▏        | 11000/95000 [00:03<00:25, 3309.11 examples/s]tokenising yelp_full/train:  13%|█▎        | 12000/95000 [00:03<00:24, 3322.59 examples/s]tokenising yelp_full/train:  14%|█▎        | 13000/95000 [00:04<00:24, 3324.97 examples/s]tokenising yelp_full/train:  15%|█▍        | 14000/95000 [00:04<00:24, 3289.08 examples/s]tokenising yelp_full/train:  16%|█▌        | 15000/95000 [00:04<00:24, 3285.18 examples/s]
+tokenising yelp_full/train:   0%|          | 0/95000 [00:00<?, ? examples/s]tokenising yelp_full/train:   1%|          | 1000/95000 [00:00<00:34, 2707.20 examples/s]tokenising yelp_full/train:   2%|▏         | 2000/95000 [00:00<00:41, 2244.32 examples/s]tokenising yelp_full/train:   3%|▎         | 3000/95000 [00:01<00:34, 2645.28 examples/s]tokenising yelp_full/train:   4%|▍         | 4000/95000 [00:01<00:32, 2804.62 examples/s]tokenising yelp_full/train:   5%|▌         | 5000/95000 [00:01<00:30, 2961.83 examples/s]tokenising yelp_full/train:   6%|▋         | 6000/95000 [00:02<00:28, 3090.75 examples/s]tokenising yelp_full/train:   7%|▋         | 7000/95000 [00:02<00:27, 3163.38 examples/s]tokenising yelp_full/train:   8%|▊         | 8000/95000 [00:02<00:26, 3225.24 examples/s]tokenising yelp_full/train:   9%|▉         | 9000/95000 [00:02<00:26, 3301.17 examples/s]tokenising yelp_full/train:  11%|█         | 10000/95000 [00:03<00:25, 3296.20 examples/s]tokenising yelp_full/train:  12%|█▏        | 11000/95000 [00:03<00:25, 3309.11 examples/s]tokenising yelp_full/train:  13%|█▎        | 12000/95000 [00:03<00:24, 3322.59 examples/s]tokenising yelp_full/train:  14%|█▎        | 13000/95000 [00:04<00:24, 3324.97 examples/s]tokenising yelp_full/train:  15%|█▍        | 14000/95000 [00:04<00:24, 3289.08 examples/s]tokenising yelp_full/train:  16%|█▌        | 15000/95000 [00:04<00:24, 3285.18 examples/s]tokenising yelp_full/train:  17%|█▋        | 16000/95000 [00:05<00:25, 3071.93 examples/s]tokenising yelp_full/train:  18%|█▊        | 17000/95000 [00:05<00:25, 3041.57 examples/s]tokenising yelp_full/train:  19%|█▉        | 18000/95000 [00:05<00:24, 3145.15 examples/s]tokenising yelp_full/train:  20%|██        | 19000/95000 [00:06<00:23, 3171.23 examples/s]tokenising yelp_full/train:  21%|██        | 20000/95000 [00:06<00:26, 2857.68 examples/s]tokenising yelp_full/train:  22%|██▏       | 21000/95000 [00:06<00:25, 2957.64 examples/s]tokenising yelp_full/train:  23%|██▎       | 22000/95000 [00:07<00:23, 3076.75 examples/s]tokenising yelp_full/train:  24%|██▍       | 23000/95000 [00:07<00:22, 3147.98 examples/s]tokenising yelp_full/train:  25%|██▌       | 24000/95000 [00:07<00:22, 3174.62 examples/s]tokenising yelp_full/train:  26%|██▋       | 25000/95000 [00:08<00:21, 3215.88 examples/s]tokenising yelp_full/train:  27%|██▋       | 26000/95000 [00:08<00:21, 3233.47 examples/s]tokenising yelp_full/train:  28%|██▊       | 27000/95000 [00:08<00:20, 3269.26 examples/s]tokenising yelp_full/train:  29%|██▉       | 28000/95000 [00:08<00:20, 3258.42 examples/s]tokenising yelp_full/train:  31%|███       | 29000/95000 [00:09<00:20, 3274.78 examples/s]tokenising yelp_full/train:  32%|███▏      | 30000/95000 [00:09<00:20, 3241.56 examples/s]tokenising yelp_full/train:  33%|███▎      | 31000/95000 [00:09<00:19, 3246.20 examples/s]tokenising yelp_full/train:  34%|███▎      | 32000/95000 [00:10<00:19, 3285.44 examples/s]tokenising yelp_full/train:  35%|███▍      | 33000/95000 [00:10<00:18, 3293.48 examples/s]tokenising yelp_full/train:  36%|███▌      | 34000/95000 [00:10<00:18, 3317.99 examples/s]tokenising yelp_full/train:  37%|███▋      | 35000/95000 [00:11<00:18, 3283.41 examples/s]tokenising yelp_full/train:  38%|███▊      | 36000/95000 [00:11<00:18, 3266.92 examples/s]tokenising yelp_full/train:  39%|███▉      | 37000/95000 [00:11<00:17, 3258.99 examples/s]tokenising yelp_full/train:  40%|████      | 38000/95000 [00:12<00:19, 2940.82 examples/s]tokenising yelp_full/train:  41%|████      | 39000/95000 [00:12<00:18, 3074.60 examples/s]tokenising yelp_full/train:  42%|████▏     | 40000/95000 [00:12<00:17, 3156.92 examples/s]tokenising yelp_full/train:  43%|████▎     | 41000/95000 [00:13<00:16, 3225.61 examples/s]tokenising yelp_full/train:  44%|████▍     | 42000/95000 [00:13<00:16, 3208.19 examples/s]tokenising yelp_full/train:  45%|████▌     | 43000/95000 [00:13<00:15, 3262.63 examples/s]tokenising yelp_full/train:  46%|████▋     | 44000/95000 [00:13<00:15, 3265.63 examples/s]tokenising yelp_full/train:  47%|████▋     | 45000/95000 [00:14<00:15, 3312.80 examples/s]tokenising yelp_full/train:  48%|████▊     | 46000/95000 [00:14<00:14, 3331.69 examples/s]tokenising yelp_full/train:  49%|████▉     | 47000/95000 [00:14<00:14, 3368.74 examples/s]tokenising yelp_full/train:  51%|█████     | 48000/95000 [00:15<00:14, 3292.74 examples/s]tokenising yelp_full/train:  52%|█████▏    | 49000/95000 [00:15<00:13, 3323.43 examples/s]tokenising yelp_full/train:  53%|█████▎    | 50000/95000 [00:15<00:13, 3313.56 examples/s]tokenising yelp_full/train:  54%|█████▎    | 51000/95000 [00:16<00:13, 3290.10 examples/s]tokenising yelp_full/train:  55%|█████▍    | 52000/95000 [00:16<00:13, 3294.77 examples/s]tokenising yelp_full/train:  56%|█████▌    | 53000/95000 [00:16<00:12, 3318.66 examples/s]tokenising yelp_full/train:  57%|█████▋    | 54000/95000 [00:16<00:12, 3334.90 examples/s]tokenising yelp_full/train:  58%|█████▊    | 55000/95000 [00:17<00:12, 3312.45 examples/s]tokenising yelp_full/train:  59%|█████▉    | 56000/95000 [00:17<00:13, 2925.31 examples/s]tokenising yelp_full/train:  60%|██████    | 57000/95000 [00:17<00:12, 3031.63 examples/s]tokenising yelp_full/train:  61%|██████    | 58000/95000 [00:18<00:11, 3105.78 examples/s]tokenising yelp_full/train:  62%|██████▏   | 59000/95000 [00:18<00:11, 3186.32 examples/s]tokenising yelp_full/train:  63%|██████▎   | 60000/95000 [00:18<00:10, 3222.84 examples/s]tokenising yelp_full/train:  64%|██████▍   | 61000/95000 [00:19<00:10, 3283.91 examples/s]tokenising yelp_full/train:  65%|██████▌   | 62000/95000 [00:19<00:10, 3263.00 examples/s]tokenising yelp_full/train:  66%|██████▋   | 63000/95000 [00:19<00:09, 3275.42 examples/s]tokenising yelp_full/train:  67%|██████▋   | 64000/95000 [00:20<00:09, 3327.99 examples/s]tokenising yelp_full/train:  68%|██████▊   | 65000/95000 [00:20<00:08, 3361.68 examples/s]tokenising yelp_full/train:  69%|██████▉   | 66000/95000 [00:20<00:08, 3366.37 examples/s]tokenising yelp_full/train:  71%|███████   | 67000/95000 [00:20<00:08, 3342.14 examples/s]tokenising yelp_full/train:  72%|███████▏  | 68000/95000 [00:21<00:08, 3321.95 examples/s]tokenising yelp_full/train:  73%|███████▎  | 69000/95000 [00:21<00:07, 3297.84 examples/s]tokenising yelp_full/train:  74%|███████▎  | 70000/95000 [00:21<00:07, 3291.38 examples/s]tokenising yelp_full/train:  75%|███████▍  | 71000/95000 [00:22<00:07, 3289.39 examples/s]tokenising yelp_full/train:  76%|███████▌  | 72000/95000 [00:22<00:07, 3245.83 examples/s]tokenising yelp_full/train:  77%|███████▋  | 73000/95000 [00:22<00:06, 3247.22 examples/s]tokenising yelp_full/train:  78%|███████▊  | 74000/95000 [00:23<00:07, 2900.77 examples/s]tokenising yelp_full/train:  79%|███████▉  | 75000/95000 [00:23<00:06, 3028.47 examples/s]tokenising yelp_full/train:  80%|████████  | 76000/95000 [00:23<00:06, 3063.22 examples/s]tokenising yelp_full/train:  81%|████████  | 77000/95000 [00:24<00:05, 3092.97 examples/s]tokenising yelp_full/train:  82%|████████▏ | 78000/95000 [00:24<00:05, 3166.92 examples/s]tokenising yelp_full/train:  83%|████████▎ | 79000/95000 [00:24<00:04, 3225.10 examples/s]tokenising yelp_full/train:  84%|████████▍ | 80000/95000 [00:25<00:04, 3248.25 examples/s]tokenising yelp_full/train:  85%|████████▌ | 81000/95000 [00:25<00:04, 3321.65 examples/s]tokenising yelp_full/train:  86%|████████▋ | 82000/95000 [00:25<00:03, 3284.95 examples/s]tokenising yelp_full/train:  87%|████████▋ | 83000/95000 [00:25<00:03, 3293.74 examples/s]tokenising yelp_full/train:  88%|████████▊ | 84000/95000 [00:26<00:03, 3314.23 examples/s]tokenising yelp_full/train:  89%|████████▉ | 85000/95000 [00:26<00:02, 3340.07 examples/s]tokenising yelp_full/train:  91%|█████████ | 86000/95000 [00:26<00:02, 3362.23 examples/s]tokenising yelp_full/train:  92%|█████████▏| 87000/95000 [00:27<00:02, 3335.30 examples/s]tokenising yelp_full/train:  93%|█████████▎| 88000/95000 [00:27<00:02, 3330.69 examples/s]tokenising yelp_full/train:  94%|█████████▎| 89000/95000 [00:27<00:01, 3371.50 examples/s]tokenising yelp_full/train:  95%|█████████▍| 90000/95000 [00:28<00:01, 3321.14 examples/s]tokenising yelp_full/train:  96%|█████████▌| 91000/95000 [00:28<00:01, 3303.11 examples/s]tokenising yelp_full/train:  97%|█████████▋| 92000/95000 [00:28<00:00, 3332.88 examples/s]tokenising yelp_full/train:  98%|█████████▊| 93000/95000 [00:29<00:00, 2930.76 examples/s]tokenising yelp_full/train:  99%|█████████▉| 94000/95000 [00:29<00:00, 3053.47 examples/s]tokenising yelp_full/train: 100%|██████████| 95000/95000 [00:29<00:00, 3135.32 examples/s]tokenising yelp_full/train: 100%|██████████| 95000/95000 [00:32<00:00, 2928.38 examples/s]
+tokenising yelp_full/val:   0%|          | 0/5000 [00:00<?, ? examples/s]tokenising yelp_full/val:  20%|██        | 1000/5000 [00:00<00:01, 2790.09 examples/s]tokenising yelp_full/val:  40%|████      | 2000/5000 [00:00<00:00, 3009.27 examples/s]tokenising yelp_full/val:  60%|██████    | 3000/5000 [00:00<00:00, 3062.99 examples/s]tokenising yelp_full/val:  80%|████████  | 4000/5000 [00:01<00:00, 3169.22 examples/s]tokenising yelp_full/val: 100%|██████████| 5000/5000 [00:01<00:00, 3224.89 examples/s]tokenising yelp_full/val: 100%|██████████| 5000/5000 [00:01<00:00, 2845.16 examples/s]
+tokenising yelp_full/test:   0%|          | 0/10000 [00:00<?, ? examples/s]tokenising yelp_full/test:  10%|█         | 1000/10000 [00:00<00:03, 2705.18 examples/s]tokenising yelp_full/test:  20%|██        | 2000/10000 [00:00<00:02, 2983.32 examples/s]tokenising yelp_full/test:  30%|███       | 3000/10000 [00:00<00:02, 3078.92 examples/s]tokenising yelp_full/test:  40%|████      | 4000/10000 [00:01<00:01, 3133.66 examples/s]tokenising yelp_full/test:  50%|█████     | 5000/10000 [00:01<00:01, 3172.68 examples/s]tokenising yelp_full/test:  60%|██████    | 6000/10000 [00:01<00:01, 3226.07 examples/s]tokenising yelp_full/test:  70%|███████   | 7000/10000 [00:02<00:00, 3279.13 examples/s]tokenising yelp_full/test:  80%|████████  | 8000/10000 [00:02<00:00, 3280.55 examples/s]tokenising yelp_full/test:  90%|█████████ | 9000/10000 [00:02<00:00, 3308.91 examples/s]tokenising yelp_full/test: 100%|██████████| 10000/10000 [00:03<00:00, 3270.83 examples/s]tokenising yelp_full/test: 100%|██████████| 10000/10000 [00:03<00:00, 2906.90 examples/s]
+  train 95000  val 5000  test 10000
+  params total 110,076,677  trainable 110,076,677
+  step   494/5936  train 1.1466  val 0.9475
+  step   988/5936  train 0.9136  val 0.8853
+  step  1482/5936  train 0.8731  val 0.8739
+  step  1976/5936  train 0.8493  val 0.8380
+  step  2470/5936  train 0.8377  val 0.8266
+  step  2964/5936  train 0.8111  val 0.8207
+  step  3458/5936  train 0.7144  val 0.8279
+  step  3952/5936  train 0.7023  val 0.8337
+  step  4446/5936  train 0.7040  val 0.8170
+  step  4940/5936  train 0.6976  val 0.8273
+  step  5434/5936  train 0.6982  val 0.8205
+  step  5928/5936  train 0.7101  val 0.8013
+  step  5936/5936  train 0.7059  val 0.8014
+  accuracy 0.6591  f1_macro 0.6581  saved artifacts/results/bert__yelp_full__A_baseline.json
+########## STAGE 2: classifier ablation on DistilBERT ##########
+[skip] distilbert__sst2__A_baseline already done
+
+=== distilbert__sst2__B_frozen_all ===
+Using the latest cached version of the dataset since nyu-mll/glue couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'sst2' at /home/ricardo.acuna/.cache/huggingface/datasets/nyu-mll___glue/sst2/0.0.0/bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c (last modified on Sat Sep 19 21:49:44 2026).
+Using the latest cached version of the dataset since nyu-mll/glue couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'sst2' at /home/ricardo.acuna/.cache/huggingface/datasets/nyu-mll___glue/sst2/0.0.0/bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c (last modified on Sat Sep 19 21:49:44 2026).
+  train 63981  val 3368  test 872
+  params total 66,955,010  trainable 592,130
+  step   333/3998  train 0.5806  val 0.4190
+  step   666/3998  train 0.4101  val 0.3802
+  step   999/3998  train 0.3978  val 0.3731
+  step  1332/3998  train 0.3748  val 0.3595
+  step  1665/3998  train 0.3773  val 0.3560
+  step  1998/3998  train 0.3741  val 0.3529
+  step  2331/3998  train 0.3820  val 0.3520
+  step  2664/3998  train 0.3763  val 0.3497
+  step  2997/3998  train 0.3656  val 0.3499
+  step  3330/3998  train 0.3705  val 0.3480
+  step  3663/3998  train 0.3720  val 0.3469
+  step  3996/3998  train 0.3673  val 0.3464
+  step  3998/3998  train 0.4386  val 0.3464
+  accuracy 0.8337  f1_macro 0.8337  saved artifacts/results/distilbert__sst2__B_frozen_all.json
+
+=== distilbert__sst2__C_frozen_half ===
+Using the latest cached version of the dataset since nyu-mll/glue couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'sst2' at /home/ricardo.acuna/.cache/huggingface/datasets/nyu-mll___glue/sst2/0.0.0/bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c (last modified on Sat Sep 19 21:49:44 2026).
+Using the latest cached version of the dataset since nyu-mll/glue couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'sst2' at /home/ricardo.acuna/.cache/huggingface/datasets/nyu-mll___glue/sst2/0.0.0/bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c (last modified on Sat Sep 19 21:49:44 2026).
+  train 63981  val 3368  test 872
+  params total 66,955,010  trainable 21,855,746
+  step   333/3998  train 0.4300  val 0.2947
+  step   666/3998  train 0.2999  val 0.2899
+  step   999/3998  train 0.2764  val 0.2494
+  step  1332/3998  train 0.2538  val 0.2384
+  step  1665/3998  train 0.2509  val 0.2289
+  step  1998/3998  train 0.2241  val 0.2254
+  step  2331/3998  train 0.2032  val 0.2235
+  step  2664/3998  train 0.2001  val 0.2182
+  step  2997/3998  train 0.1927  val 0.2053
+  step  3330/3998  train 0.1923  val 0.2064
+  step  3663/3998  train 0.1856  val 0.2026
+  step  3996/3998  train 0.1869  val 0.2020
+  step  3998/3998  train 0.1908  val 0.2020
+  accuracy 0.9094  f1_macro 0.9093  saved artifacts/results/distilbert__sst2__C_frozen_half.json
+
+=== distilbert__sst2__D_narrow ===
+Using the latest cached version of the dataset since nyu-mll/glue couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'sst2' at /home/ricardo.acuna/.cache/huggingface/datasets/nyu-mll___glue/sst2/0.0.0/bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c (last modified on Sat Sep 19 21:49:44 2026).
+Using the latest cached version of the dataset since nyu-mll/glue couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'sst2' at /home/ricardo.acuna/.cache/huggingface/datasets/nyu-mll___glue/sst2/0.0.0/bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c (last modified on Sat Sep 19 21:49:44 2026).
+  train 63981  val 3368  test 872
+  params total 66,461,570  trainable 66,461,570
+  step   333/3998  train 0.4169  val 0.2618
+  step   666/3998  train 0.2627  val 0.2284
+  step   999/3998  train 0.2291  val 0.2086
+  step  1332/3998  train 0.1994  val 0.1927
+  step  1665/3998  train 0.1958  val 0.1736
+  step  1998/3998  train 0.1718  val 0.1708
+  step  2331/3998  train 0.1219  val 0.1781
+  step  2664/3998  train 0.1251  val 0.1647
+  step  2997/3998  train 0.1180  val 0.1697
+  step  3330/3998  train 0.1163  val 0.1750
+  step  3663/3998  train 0.1164  val 0.1661
+  step  3996/3998  train 0.1140  val 0.1659
+  step  3998/3998  train 0.1378  val 0.1659
+  accuracy 0.9106  f1_macro 0.9105  saved artifacts/results/distilbert__sst2__D_narrow.json
+
+=== distilbert__sst2__E_wide ===
+Using the latest cached version of the dataset since nyu-mll/glue couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'sst2' at /home/ricardo.acuna/.cache/huggingface/datasets/nyu-mll___glue/sst2/0.0.0/bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c (last modified on Sat Sep 19 21:49:44 2026).
+Using the latest cached version of the dataset since nyu-mll/glue couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'sst2' at /home/ricardo.acuna/.cache/huggingface/datasets/nyu-mll___glue/sst2/0.0.0/bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c (last modified on Sat Sep 19 21:49:44 2026).
+  train 63981  val 3368  test 872
+  params total 67,941,890  trainable 67,941,890
+  step   333/3998  train 0.4010  val 0.2562
+  step   666/3998  train 0.2568  val 0.2301
+  step   999/3998  train 0.2257  val 0.2058
+  step  1332/3998  train 0.1968  val 0.1917
+  step  1665/3998  train 0.1922  val 0.1764
+  step  1998/3998  train 0.1698  val 0.1717
+  step  2331/3998  train 0.1205  val 0.1760
+  step  2664/3998  train 0.1219  val 0.1661
+  step  2997/3998  train 0.1158  val 0.1698
+  step  3330/3998  train 0.1144  val 0.1740
+  step  3663/3998  train 0.1134  val 0.1656
+  step  3996/3998  train 0.1121  val 0.1643
+  step  3998/3998  train 0.1306  val 0.1644
+  accuracy 0.9083  f1_macro 0.9082  saved artifacts/results/distilbert__sst2__E_wide.json
+
+=== distilbert__sst2__F_deep ===
+Using the latest cached version of the dataset since nyu-mll/glue couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'sst2' at /home/ricardo.acuna/.cache/huggingface/datasets/nyu-mll___glue/sst2/0.0.0/bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c (last modified on Sat Sep 19 21:49:44 2026).
+Using the latest cached version of the dataset since nyu-mll/glue couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'sst2' at /home/ricardo.acuna/.cache/huggingface/datasets/nyu-mll___glue/sst2/0.0.0/bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c (last modified on Sat Sep 19 21:49:44 2026).
+  train 63981  val 3368  test 872
+  params total 68,136,194  trainable 68,136,194
+  step   333/3998  train 0.4232  val 0.2661
+  step   666/3998  train 0.2680  val 0.2335
+  step   999/3998  train 0.2207  val 0.1975
+  step  1332/3998  train 0.1982  val 0.1853
+  step  1665/3998  train 0.1887  val 0.1757
+  step  1998/3998  train 0.1720  val 0.1615
+  step  2331/3998  train 0.1223  val 0.1663
+  step  2664/3998  train 0.1231  val 0.1722
+  step  2997/3998  train 0.1137  val 0.1820
+  step  3330/3998  train 0.1177  val 0.1730
+  step  3663/3998  train 0.1136  val 0.1628
+  step  3996/3998  train 0.1118  val 0.1693
+  step  3998/3998  train 0.0701  val 0.1692
+  accuracy 0.9083  f1_macro 0.9082  saved artifacts/results/distilbert__sst2__F_deep.json
+
+=== distilbert__sst2__G_linear ===
+Using the latest cached version of the dataset since nyu-mll/glue couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'sst2' at /home/ricardo.acuna/.cache/huggingface/datasets/nyu-mll___glue/sst2/0.0.0/bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c (last modified on Sat Sep 19 21:49:44 2026).
+Using the latest cached version of the dataset since nyu-mll/glue couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'sst2' at /home/ricardo.acuna/.cache/huggingface/datasets/nyu-mll___glue/sst2/0.0.0/bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c (last modified on Sat Sep 19 21:49:44 2026).
+  train 63981  val 3368  test 872
+  params total 66,364,418  trainable 66,364,418
+  step   333/3998  train 0.4239  val 0.2911
+  step   666/3998  train 0.2645  val 0.2245
+  step   999/3998  train 0.2243  val 0.2184
+  step  1332/3998  train 0.2007  val 0.1900
+  step  1665/3998  train 0.1918  val 0.1727
+  step  1998/3998  train 0.1734  val 0.1721
+  step  2331/3998  train 0.1193  val 0.1744
+  step  2664/3998  train 0.1241  val 0.1735
+  step  2997/3998  train 0.1126  val 0.1676
+  step  3330/3998  train 0.1156  val 0.1739
+  step  3663/3998  train 0.1142  val 0.1685
+  step  3996/3998  train 0.1125  val 0.1702
+  step  3998/3998  train 0.0834  val 0.1702
+  accuracy 0.9140  f1_macro 0.9139  saved artifacts/results/distilbert__sst2__G_linear.json
+[skip] distilbert__ag_news__A_baseline already done
+
+=== distilbert__ag_news__B_frozen_all ===
+Using the latest cached version of the dataset since fancyzhx/ag_news couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/ricardo.acuna/.cache/huggingface/datasets/fancyzhx___ag_news/default/0.0.0/eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Sat Sep 19 21:38:43 2026).
+Using the latest cached version of the dataset since fancyzhx/ag_news couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/ricardo.acuna/.cache/huggingface/datasets/fancyzhx___ag_news/default/0.0.0/eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Sat Sep 19 21:38:43 2026).
+  train 114000  val 6000  test 7600
+  params total 66,956,548  trainable 593,668
+  step   593/7124  train 0.7305  val 0.3593
+  step  1186/7124  train 0.3439  val 0.3225
+  step  1779/7124  train 0.3195  val 0.3156
+  step  2372/7124  train 0.3152  val 0.3034
+  step  2965/7124  train 0.3063  val 0.3035
+  step  3558/7124  train 0.3042  val 0.2987
+  step  4151/7124  train 0.2957  val 0.3002
+  step  4744/7124  train 0.2960  val 0.2946
+  step  5337/7124  train 0.2977  val 0.2923
+  step  5930/7124  train 0.2864  val 0.2920
+  step  6523/7124  train 0.2929  val 0.2903
+  step  7116/7124  train 0.2841  val 0.2890
+  step  7124/7124  train 0.2422  val 0.2890
+  accuracy 0.9007  f1_macro 0.9004  saved artifacts/results/distilbert__ag_news__B_frozen_all.json
+
+=== distilbert__ag_news__C_frozen_half ===
+Using the latest cached version of the dataset since fancyzhx/ag_news couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/ricardo.acuna/.cache/huggingface/datasets/fancyzhx___ag_news/default/0.0.0/eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Sat Sep 19 21:38:43 2026).
+Using the latest cached version of the dataset since fancyzhx/ag_news couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/ricardo.acuna/.cache/huggingface/datasets/fancyzhx___ag_news/default/0.0.0/eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Sat Sep 19 21:38:43 2026).
+  train 114000  val 6000  test 7600
+  params total 66,956,548  trainable 21,857,284
+  step   593/7124  train 0.5143  val 0.2932
+  step  1186/7124  train 0.2474  val 0.2345
+  step  1779/7124  train 0.2250  val 0.2294
+  step  2372/7124  train 0.2117  val 0.2223
+  step  2965/7124  train 0.1990  val 0.2187
+  step  3558/7124  train 0.2023  val 0.2029
+  step  4151/7124  train 0.1741  val 0.2025
+  step  4744/7124  train 0.1720  val 0.2040
+  step  5337/7124  train 0.1623  val 0.2010
+  step  5930/7124  train 0.1578  val 0.1938
+  step  6523/7124  train 0.1572  val 0.1894
+  step  7116/7124  train 0.1567  val 0.1897
+  step  7124/7124  train 0.1443  val 0.1898
+  accuracy 0.9417  f1_macro 0.9417  saved artifacts/results/distilbert__ag_news__C_frozen_half.json
+
+=== distilbert__ag_news__D_narrow ===
+Using the latest cached version of the dataset since fancyzhx/ag_news couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/ricardo.acuna/.cache/huggingface/datasets/fancyzhx___ag_news/default/0.0.0/eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Sat Sep 19 21:38:43 2026).
+Using the latest cached version of the dataset since fancyzhx/ag_news couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/ricardo.acuna/.cache/huggingface/datasets/fancyzhx___ag_news/default/0.0.0/eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Sat Sep 19 21:38:43 2026).
+  train 114000  val 6000  test 7600
+  params total 66,461,828  trainable 66,461,828
+  step   593/7124  train 0.5272  val 0.3048
+  step  1186/7124  train 0.2434  val 0.2320
+  step  1779/7124  train 0.2199  val 0.2209
+  step  2372/7124  train 0.2010  val 0.2129
+  step  2965/7124  train 0.1886  val 0.2129
+  step  3558/7124  train 0.1902  val 0.1982
+  step  4151/7124  train 0.1468  val 0.2066
+  step  4744/7124  train 0.1443  val 0.2062
+  step  5337/7124  train 0.1344  val 0.2093
+  step  5930/7124  train 0.1334  val 0.2024
+  step  6523/7124  train 0.1318  val 0.1969
+  step  7116/7124  train 0.1282  val 0.1973
+  step  7124/7124  train 0.1118  val 0.1973
+  accuracy 0.9455  f1_macro 0.9455  saved artifacts/results/distilbert__ag_news__D_narrow.json
+
+=== distilbert__ag_news__E_wide ===
+Using the latest cached version of the dataset since fancyzhx/ag_news couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/ricardo.acuna/.cache/huggingface/datasets/fancyzhx___ag_news/default/0.0.0/eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Sat Sep 19 21:38:43 2026).
+Using the latest cached version of the dataset since fancyzhx/ag_news couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/ricardo.acuna/.cache/huggingface/datasets/fancyzhx___ag_news/default/0.0.0/eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Sat Sep 19 21:38:43 2026).
+  train 114000  val 6000  test 7600
+  params total 67,945,988  trainable 67,945,988
+  step   593/7124  train 0.4652  val 0.3336
+  step  1186/7124  train 0.2361  val 0.2247
+  step  1779/7124  train 0.2155  val 0.2220
+  step  2372/7124  train 0.1977  val 0.2079
+  step  2965/7124  train 0.1867  val 0.2046
+  step  3558/7124  train 0.1867  val 0.1923
+  step  4151/7124  train 0.1422  val 0.1945
+  step  4744/7124  train 0.1395  val 0.1972
+  step  5337/7124  train 0.1299  val 0.2044
+  step  5930/7124  train 0.1271  val 0.1921
+  step  6523/7124  train 0.1278  val 0.1874
+  step  7116/7124  train 0.1229  val 0.1874
+  step  7124/7124  train 0.1085  val 0.1874
+  accuracy 0.9472  f1_macro 0.9473  saved artifacts/results/distilbert__ag_news__E_wide.json
+
+=== distilbert__ag_news__F_deep ===
+Using the latest cached version of the dataset since fancyzhx/ag_news couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/ricardo.acuna/.cache/huggingface/datasets/fancyzhx___ag_news/default/0.0.0/eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Sat Sep 19 21:38:43 2026).
+Using the latest cached version of the dataset since fancyzhx/ag_news couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/ricardo.acuna/.cache/huggingface/datasets/fancyzhx___ag_news/default/0.0.0/eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Sat Sep 19 21:38:43 2026).
+  train 114000  val 6000  test 7600
+  params total 68,137,732  trainable 68,137,732
+  step   593/7124  train 0.5242  val 0.3466
+  step  1186/7124  train 0.2469  val 0.2204
+  step  1779/7124  train 0.2195  val 0.2264
+  step  2372/7124  train 0.2021  val 0.2178
+  step  2965/7124  train 0.1903  val 0.2034
+  step  3558/7124  train 0.1895  val 0.1916
+  step  4151/7124  train 0.1473  val 0.1964
+  step  4744/7124  train 0.1412  val 0.2000
+  step  5337/7124  train 0.1336  val 0.1995
+  step  5930/7124  train 0.1320  val 0.1964
+  step  6523/7124  train 0.1288  val 0.1969
+  step  7116/7124  train 0.1250  val 0.1950
+  step  7124/7124  train 0.1039  val 0.1951
+  accuracy 0.9479  f1_macro 0.9479  saved artifacts/results/distilbert__ag_news__F_deep.json
+
+=== distilbert__ag_news__G_linear ===
+Using the latest cached version of the dataset since fancyzhx/ag_news couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/ricardo.acuna/.cache/huggingface/datasets/fancyzhx___ag_news/default/0.0.0/eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Sat Sep 19 21:38:43 2026).
+Using the latest cached version of the dataset since fancyzhx/ag_news couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/ricardo.acuna/.cache/huggingface/datasets/fancyzhx___ag_news/default/0.0.0/eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Sat Sep 19 21:38:43 2026).
+  train 114000  val 6000  test 7600
+  params total 66,365,956  trainable 66,365,956
+  step   593/7124  train 0.4846  val 0.2923
+  step  1186/7124  train 0.2340  val 0.2262
+  step  1779/7124  train 0.2108  val 0.2203
+  step  2372/7124  train 0.1966  val 0.2157
+  step  2965/7124  train 0.1830  val 0.2084
+  step  3558/7124  train 0.1849  val 0.1931
+  step  4151/7124  train 0.1392  val 0.2027
+  step  4744/7124  train 0.1362  val 0.1952
+  step  5337/7124  train 0.1275  val 0.2038
+  step  5930/7124  train 0.1288  val 0.1925
+  step  6523/7124  train 0.1269  val 0.1894
+  step  7116/7124  train 0.1202  val 0.1906
+  step  7124/7124  train 0.0946  val 0.1906
+  accuracy 0.9484  f1_macro 0.9485  saved artifacts/results/distilbert__ag_news__G_linear.json
+########## STAGE 3: best ablation variant on BERT ##########
+best ablation variant: G_linear
+
+=== bert__sst2__G_linear ===
+Using the latest cached version of the dataset since nyu-mll/glue couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'sst2' at /home/ricardo.acuna/.cache/huggingface/datasets/nyu-mll___glue/sst2/0.0.0/bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c (last modified on Sat Sep 19 21:49:44 2026).
+Using the latest cached version of the dataset since nyu-mll/glue couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'sst2' at /home/ricardo.acuna/.cache/huggingface/datasets/nyu-mll___glue/sst2/0.0.0/bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c (last modified on Sat Sep 19 21:49:44 2026).
+  train 63981  val 3368  test 872
+  params total 109,483,778  trainable 109,483,778
+  step   333/3998  train 0.3991  val 0.2392
+  step   666/3998  train 0.2451  val 0.1934
+  step   999/3998  train 0.2018  val 0.1800
+  step  1332/3998  train 0.1803  val 0.1720
+  step  1665/3998  train 0.1774  val 0.1542
+  step  1998/3998  train 0.1588  val 0.1544
+  step  2331/3998  train 0.1040  val 0.1744
+  step  2664/3998  train 0.1162  val 0.1618
+  step  2997/3998  train 0.1033  val 0.1630
+  step  3330/3998  train 0.1094  val 0.1653
+  step  3663/3998  train 0.0984  val 0.1625
+  step  3996/3998  train 0.1001  val 0.1619
+  step  3998/3998  train 0.0707  val 0.1620
+  accuracy 0.9197  f1_macro 0.9197  saved artifacts/results/bert__sst2__G_linear.json
+
+=== bert__ag_news__G_linear ===
+Using the latest cached version of the dataset since fancyzhx/ag_news couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/ricardo.acuna/.cache/huggingface/datasets/fancyzhx___ag_news/default/0.0.0/eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Sat Sep 19 21:38:43 2026).
+Using the latest cached version of the dataset since fancyzhx/ag_news couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/ricardo.acuna/.cache/huggingface/datasets/fancyzhx___ag_news/default/0.0.0/eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Sat Sep 19 21:38:43 2026).
+  train 114000  val 6000  test 7600
+  params total 109,485,316  trainable 109,485,316
+  step   593/7124  train 0.4631  val 0.2746
+  step  1186/7124  train 0.2228  val 0.2203
+  step  1779/7124  train 0.2049  val 0.2187
+  step  2372/7124  train 0.1890  val 0.1985
+  step  2965/7124  train 0.1777  val 0.1830
+  step  3558/7124  train 0.1805  val 0.1866
+  step  4151/7124  train 0.1323  val 0.1781
+  step  4744/7124  train 0.1299  val 0.1811
+  step  5337/7124  train 0.1191  val 0.1889
+  step  5930/7124  train 0.1167  val 0.1788
+  step  6523/7124  train 0.1183  val 0.1746
+  step  7116/7124  train 0.1126  val 0.1746
+  step  7124/7124  train 0.1089  val 0.1746
+  accuracy 0.9472  f1_macro 0.9473  saved artifacts/results/bert__ag_news__G_linear.json
+########## STAGE 4: embedding export for the web demo ##########
+embedding words with both pretrained backbones
+  mean neighbour overlap 7.315/10, CKA 0.8977
+  topic purity: BERT 0.6873, DistilBERT 0.7222
+  alignment by depth (distil layer, bert layer, CKA, overlap):
+    D0 B0: CKA 0.977  overlap 8.60
+    D1 B2: CKA 0.932  overlap 7.58
+    D2 B4: CKA 0.900  overlap 6.74
+    D3 B6: CKA 0.838  overlap 5.79
+    D4 B8: CKA 0.779  overlap 5.18
+    D5 B10: CKA 0.705  overlap 4.53
+    D6 B12: CKA 0.578  overlap 3.80
+  validated: 496 words, every neighbour list complete and consistent
+Using the latest cached version of the dataset since fancyzhx/ag_news couldn't be found on the Hugging Face Hub (offline mode is enabled).
+Found the latest cached dataset configuration 'default' at /home/ricardo.acuna/.cache/huggingface/datasets/fancyzhx___ag_news/default/0.0.0/eb185aade064a813bc0b7f42de02595523103ca4 (last modified on Sat Sep 19 21:38:43 2026).
+embedding AG News sentences with both fine tuned encoders
+  sentence CKA 0.9746
+  summary rows: 8
+web data written to web/data
+done Sat Sep 19 23:20:27 -05 2026

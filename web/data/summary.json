@@ -1,0 +1,92 @@
+{
+  "runs": [
+    {
+      "model": "bert",
+      "dataset": "ag_news",
+      "accuracy": 94.59,
+      "f1_macro": 94.59,
+      "params_m": 110.1,
+      "latency_ms": 3.25,
+      "throughput": 609.6,
+      "train_gpu_mb": 3092.8,
+      "train_seconds": 471.4
+    },
+    {
+      "model": "bert",
+      "dataset": "sst2",
+      "accuracy": 92.66,
+      "f1_macro": 92.65,
+      "params_m": 110.1,
+      "latency_ms": 5.25,
+      "throughput": 1218.5,
+      "train_gpu_mb": 2308.4,
+      "train_seconds": 216.1
+    },
+    {
+      "model": "bert",
+      "dataset": "yelp_full",
+      "accuracy": 65.91,
+      "f1_macro": 65.81,
+      "params_m": 110.1,
+      "latency_ms": 5.17,
+      "throughput": 310.2,
+      "train_gpu_mb": 4708.6,
+      "train_seconds": 687.0
+    },
+    {
+      "model": "bert",
+      "dataset": "yelp_polarity",
+      "accuracy": 96.61,
+      "f1_macro": 96.61,
+      "params_m": 110.1,
+      "latency_ms": 5.17,
+      "throughput": 310.5,
+      "train_gpu_mb": 4708.5,
+      "train_seconds": 686.5
+    },
+    {
+      "model": "distilbert",
+      "dataset": "ag_news",
+      "accuracy": 94.63,
+      "f1_macro": 94.63,
+      "params_m": 67.0,
+      "latency_ms": 2.57,
+      "throughput": 1218.0,
+      "train_gpu_mb": 1713.3,
+      "train_seconds": 280.2
+    },
+    {
+      "model": "distilbert",
+      "dataset": "sst2",
+      "accuracy": 91.06,
+      "f1_macro": 91.05,
+      "params_m": 67.0,
+      "latency_ms": 2.56,
+      "throughput": 2442.3,
+      "train_gpu_mb": 1323.2,
+      "train_seconds": 155.4
+    },
+    {
+      "model": "distilbert",
+      "dataset": "yelp_full",
+      "accuracy": 64.91,
+      "f1_macro": 64.86,
+      "params_m": 67.0,
+      "latency_ms": 2.62,
+      "throughput": 621.2,
+      "train_gpu_mb": 2546.5,
+      "train_seconds": 354.4
+    },
+    {
+      "model": "distilbert",
+      "dataset": "yelp_polarity",
+      "accuracy": 96.28,
+      "f1_macro": 96.28,
+      "params_m": 67.0,
+      "latency_ms": 2.63,
+      "throughput": 621.3,
+      "train_gpu_mb": 2546.5,
+      "train_seconds": 353.6
+    }
+  ]
+}
